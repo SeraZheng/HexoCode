@@ -1,0 +1,689 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>iOS实现App之间的内容分享 | 郑少博的技术博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="SeraZheng">
+    
+
+    
+    <meta name="description" content="介绍如何在iOS系统上实现跨App之间的内容分享">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS实现App之间的内容分享">
+<meta property="og:url" content="http://serazheng.github.io/2015-11-25-iOS实现App之间的内容分享/index.html">
+<meta property="og:site_name" content="郑少博的技术博客">
+<meta property="og:description" content="介绍如何在iOS系统上实现跨App之间的内容分享">
+<meta property="og:image" content="http://serazheng.github.io/images/在info中添加DocumentTypes.png">
+<meta property="og:image" content="http://serazheng.github.io/images/注册成功.png">
+<meta property="og:image" content="http://serazheng.github.io/images/我的文件列表.png">
+<meta property="og:image" content="http://serazheng.github.io/images/打开图片看到图标.png">
+<meta property="og:image" content="http://serazheng.github.io/images/PDF看不到图标.png">
+<meta property="og:image" content="http://serazheng.github.io/images/显示图片.png">
+<meta property="og:updated_time" content="2016-04-12T06:52:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS实现App之间的内容分享">
+<meta name="twitter:description" content="介绍如何在iOS系统上实现跨App之间的内容分享">
+<meta name="twitter:image" content="http://serazheng.github.io/images/在info中添加DocumentTypes.png">
+<meta name="twitter:creator" content="@serazheng">
+
+    
+    <link rel="alternative" href="/atom.xml" title="郑少博的技术博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="郑少博的技术博客" title="郑少博的技术博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="郑少博的技术博客">郑少博的技术博客</a></h1>
+				<h2 class="blog-motto">态度决定一切，生命在于奋斗！热爱生活，热爱生命！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:serazheng.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015-11-25-iOS实现App之间的内容分享/" title="iOS实现App之间的内容分享" itemprop="url">iOS实现App之间的内容分享</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
+		
+  <p class="article-time">
+    <time datetime="2015-11-24T16:00:00.000Z" itemprop="datePublished"> Published 2015-11-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#原理"><span class="toc-number">2.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#主要技术"><span class="toc-number">3.</span> <span class="toc-text">主要技术</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注册可用类型"><span class="toc-number">4.</span> <span class="toc-text">注册可用类型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#打开第三方应用"><span class="toc-number">5.</span> <span class="toc-text">打开第三方应用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#程序回调"><span class="toc-number">6.</span> <span class="toc-text">程序回调</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我们在iOS平台上想要实现不同App之间的内容分享一般有几种常用方式：</p>
+<ol>
+<li>第一种是通过<code>AirDrop</code>实现不同设备的App之间文档和数据的分享；</li>
+<li>第二种是给每个App定义一个URL Scheme，通过访问指定了URL Scheme的一个URL，实现直接访问一个APP；</li>
+<li>第三种是通过<code>UIDocumentInteractionController</code>或者是<code>UIActivityViewController</code>这俩个iOS SDK中封装好的类在App之间发送数据、分享数据和操作数据；</li>
+<li>第四种是通过<code>App Extension</code>，在iOS 8的SDK中提供的扩展新特性实现跨App的数据操作和分享；</li>
+<li>还有一种集成第三方SDK实现的有限个App的数据分享，比如社交平台(QQ,微信,新浪微博等)给我们提供的官方SDK，或者是集成了多个社交平台的ShareSDK组件和友盟分享组件等。<a id="more"></a>
+关于集成第三方SDK的使用，各大平台官网上都有详细的文档说明，因此我们这系列文章主要是来谈谈苹果原生提供的基于iOS SDK的分享技术，同时推荐俩篇苹果开发者中心的文档：<a href="https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/Inter-AppCommunication/Inter-AppCommunication.html#//apple_ref/doc/uid/TP40007072-CH6-SW2" target="_blank" rel="external">Inter-App Communication</a>和<a href="https://developer.apple.com/library/ios/documentation/FileManagement/Conceptual/DocumentInteraction_TopicsForIOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40010409-SW1" target="_blank" rel="external">Document Interaction Programming Topics for iOS</a>。我们的第一篇文章就谈一下如何通过UTI让我们的App支持分享。</li>
+</ol>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>我在<a href="http://www.jianshu.com/p/d6fe1e7af9b6" target="_blank" rel="external">“详解苹果提供的UTI(统一类型标识符)“</a>这篇文章中，详细地讲解了一下<code>UTI(Uniform Type Identifier)</code>,一套苹果给我们提供用来在基于Cocoa和Cocoa Touch应用程序中识别实体内容类型的规范，而关于实现内容关联的技术也正是基于这套规范。在iOS和Mac OS开发中，苹果给我们提供了注册文档类型的接口，而这种注册的文档类型是全局的，系统中所有的应用程序和服务都可以侦测到。因此我们通过这个底层侦测，可以使用其他可选的<code>第三方App</code>来预览<code>我们的App</code>中不支持的文档，而且我们还可以通过这个接口在<code>我们的App</code>中打开并处理<code>第三方App</code>的文档。</p>
+<p>如果我们的App可以处理某些类型的实体内容，那么我们就可以在我们项目中的<code>Info.plist</code>文件中进行注册。关于使用哪种类型和UTI，就要参考我在<a href="http://www.jianshu.com/p/d6fe1e7af9b6" target="_blank" rel="external">“详解苹果提供的UTI(统一类型标识符)“</a>这篇文章中的讲解。当一个第三方App通过苹果的底层侦测技术检查有哪些App可以处理它所指定的内容类型时，如果我们的App已经注册了这种类型，那么我们的App图标就会显示在其中，并且作为我们自己的App的一个入口。</p>
+<h1 id="主要技术"><a href="#主要技术" class="headerlink" title="主要技术"></a>主要技术</h1><p>主要应用到这种底层侦测的技术有iOS SDK中给我们提供的<code>UIDocumentInteractionController</code>、<code>UIActivityViewController</code> 和<code>Quick Look 框架</code>。此外，在iOS 8中，苹果又给开发者提供了<code>App Extension</code>，一种更高大上的方式在App之间的实现分享内容。关于<code>UIDocumentInteractionController</code>、<code>UIActivityViewController</code>、<code>Quick Look 框架</code>以及<code>App Extension</code>的细节，我计划在后面的文章中详细讲解。这篇文章，我们主要是来谈谈<code>如何注册我们App可用的文档类型</code>以及<code>简单使用我们的App来处理第三方App分享的内容</code>。</p>
+<h1 id="注册可用类型"><a href="#注册可用类型" class="headerlink" title="注册可用类型"></a>注册可用类型</h1><p>我们需要在<code>info.plist</code>文件中，添加一个新的属性<code>CFBundleDocumentTypes</code>(实际上输入的是<code>&quot;Document types&quot;</code>)，这是一个数组类型的属性，意思就是我们可以同时注册多个类型。而针对数组中的每一个元素，都有许多属性可以指定，详细的属性列表我们可以从官方文档上找到: <a href="https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-101685" target="_blank" rel="external">Core Foundation Keys —- CFBundleDocumentTypes</a>。这里列举我们在做iOS开发时常用的属性：</p>
+<ul>
+<li>CFBundleTypeName(<code>&quot;Icon File Name&quot;</code>)</li>
+</ul>
+<p>字符串类型，指定某种类型的别名，也就是用来指代我们规定的类型的别称，一般为了保持唯一性，我们使用UTI来标识。</p>
+<ul>
+<li>CFBundleTypeIconFiles<br>数组类型，包含指定的png图标的文件名，指定代表某种类型的图标，而图标有具体的尺寸标识：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Device</th>
+<th style="text-align:left">Sizes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">iPad</td>
+<td style="text-align:left">64 x 64 pixels, 320 x 320 pixels</td>
+</tr>
+<tr>
+<td style="text-align:left">iPhone and iPod touch</td>
+<td style="text-align:left">22 x 29 pixels, 44 x 58 pixels (high       resolution)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>LSItemContentTypes(<code>&quot;Document Content Type UTIs&quot;</code>)</li>
+</ul>
+<p>数组类型，包含UTI字符串，指定我们的应用程序所有可以识别的类型集合</p>
+<ul>
+<li>LSHandlerRank(<code>&quot;Handler rank&quot;</code>)</li>
+</ul>
+<p>字符串类型，包含<code>Owner</code>,<code>Default</code>,<code>Alternate</code>,<code>None</code>四个可选值，指定对于某种类型的优先权级别，而<code>Launcher Service</code>会根据这个优先级别来排列显示的App的顺序。优先级别从高到低依次是<code>Owner</code>，<code>Alternate</code>,<code>Default</code>。<code>None</code>表示不接受这种类型。</p>
+<p>了解了这些基本属性，我们就需要在注册App可用类型时，指定这些属性，根据每个项目的需求不同，属性值也不同。具体的注册请参照我的GitHub上的项目：<a href="https://github.com/SeraZheng/ZSUTITest/tree/master" target="_blank" rel="external">SeraZheng—ZSUTITest</a>。下图示例作为一个参照：<br><img src="/images/在info中添加DocumentTypes.png"></p>
+<p>而当我们添加完所有属性后，开始运行我们的程序，然后再回到我们的Info界面，就会看到<code>Document types</code>这个列表已经发生了变化，这就证明我们成功的注册好了App可用的类型。<br><img src="/images/注册成功.png"></p>
+<h1 id="打开第三方应用"><a href="#打开第三方应用" class="headerlink" title="打开第三方应用"></a>打开第三方应用</h1><p>我们在上面的步骤中注册好了我们的App可以识别的类型，现在我们可以打开一个使用<code>UIDocumentInteractionController</code>或者是<code>Quick Look</code>框架来展示内容的第三方App，这里以iPhone 上的QQ程序为例。</p>
+<p>我们在上面的注册步骤中，注册的<code>LSItemContentTypes</code>仅包含了<code>public.image</code>这个UTI。所以我们先从QQ应用程序的<code>我的文件</code>中，打开不同类型的文件进行对比，大家可以看下图<code>我的文件</code>列表中包含俩种类型的文件，一种是<code>.jpg</code>扩展名的图片文件，一种是<code>.pdf</code>扩展名的文档文件。</p>
+<img src="/images/我的文件列表.png">
+<p>当我打开一个图片文件进行预览时，点击<code>其他应用打开</code>，就可以在App列表中看到我们的App图标。简单介绍一下这个页面，第一行是苹果在iOS 7之后给我们提供的使用<code>AirDrop</code>在<code>iPhone</code>、<code>iPad</code>或<code>iPod Touch</code>设备之间通过<code>iCloud</code>共享内容的一种方式。第二行是通过文档类型关联技术识别的App的列表。第三行是通过文档关联技术识别的<code>Action</code>的列表，<code>Action</code>表示对文档可进行的操作，如复制，打印等。<br><img src="/images/打开图片看到图标.png"></p>
+<p>而如果我打开PDF文件的话，就看不到我们的App图标。<br><img src="/images/PDF看不到图标.png"></p>
+<h1 id="程序回调"><a href="#程序回调" class="headerlink" title="程序回调"></a>程序回调</h1><p>当我们通过上面步骤，成功地显示了<code>ZSUTITestDemo</code> 的图标之后，点击图标，我们就可以跳转到<code>ZSUTITestDemo</code>应用中，而苹果在iOS SDK中给我们提供的接收回调的方法在iOS 9之后做出了改变，因此我们需要针对不同的设备版本做出改变：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#if __IPHONE_OS_VERSION_MAX_ALLOWED <span class="meta-string">&lt; __IPHONE_9_0</span><br><span class="line">- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation</span><br><span class="line">&#123;</span><br><span class="line">    UINavigationController *navigation = (UINavigationController *)application.keyWindow.rootViewController;</span><br><span class="line">    ViewController *displayController = (ViewController *)navigation.topViewController;</span><br><span class="line">    </span><br><span class="line">    [displayController.imageView setImage:[UIImage imageWithData:[NSData dataWithContentsOfURL:url]]];</span><br><span class="line">    [displayController.label setText:sourceApplication];</span><br><span class="line">    </span><br><span class="line">    return YES;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#else</span><br><span class="line">- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(nonnull NSDictionary&lt;NSString *,id&gt;</span> *)options</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">UINavigationController</span> *navigation = (<span class="built_in">UINavigationController</span> *)application.keyWindow.rootViewController;</span><br><span class="line">    ViewController *displayController = (ViewController *)navigation.topViewController;</span><br><span class="line">    </span><br><span class="line">    [displayController.imageView setImage:[<span class="built_in">UIImage</span> imageWithData:[<span class="built_in">NSData</span> dataWithContentsOfURL:url]]];</span><br><span class="line">    [displayController.label setText:[options objectForKey:<span class="built_in">UIApplicationOpenURLOptionsSourceApplicationKey</span>]];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#endif</span></span><br></pre></td></tr></table></figure>
+<p>Demo示例可以从GitHub项目上参照代码：<a href="https://github.com/SeraZheng/ZSUTITest/tree/master" target="_blank" rel="external">SeraZheng—ZSUTITest</a>。当点击<code>ZSUTITestDemo</code>程序图标回到调用代码中，我们可以在这里做各种我们想做的事，如上传图片、预览图片、操作图片等等。我只对图片做了简单的预览显示，然后显示文件的源程序的<code>Bundle Identifier</code>，示例如下图：<br><img src="/images/显示图片.png"></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/source/categories/iOS/">iOS</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/source/tags/UTI/">UTI</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://serazheng.github.io/2015-11-25-iOS实现App之间的内容分享/" data-title="iOS实现App之间的内容分享 | 郑少博的技术博客" data-tsina="5738250598" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015-12-05-通过UIDocumentInteractionController预览和分享/" title="通过UIDocumentInteractionController预览和分享">
+  <strong>上一篇：</strong><br/>
+  <span>
+  通过UIDocumentInteractionController预览和分享</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015-11-20-详解苹果提供的UTI(统一类型标识符)/"  title="详解苹果提供的UTI(统一类型标识符)">
+ <strong>下一篇：</strong><br/> 
+ <span>详解苹果提供的UTI(统一类型标识符)
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#原理"><span class="toc-number">2.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#主要技术"><span class="toc-number">3.</span> <span class="toc-text">主要技术</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注册可用类型"><span class="toc-number">4.</span> <span class="toc-text">注册可用类型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#打开第三方应用"><span class="toc-number">5.</span> <span class="toc-text">打开第三方应用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#程序回调"><span class="toc-number">6.</span> <span class="toc-text">程序回调</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="serazheng" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/source/categories/Objective-C/" title="Objective-C">Objective-C<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Xcode/" title="Xcode">Xcode<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/iOS/" title="iOS">iOS<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/开发心得/" title="开发心得">开发心得<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/设计/" title="设计">设计<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/source/tags/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UTI/" title="UTI">UTI<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UIKit/" title="UIKit">UIKit<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/APNS/" title="APNS">APNS<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/注释/" title="注释">注释<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/OC基础/" title="OC基础">OC基础<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/设计/" title="设计">设计<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/CoreAnimation/" title="CoreAnimation">CoreAnimation<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/架构/" title="架构">架构<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/内存管理/" title="内存管理">内存管理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/TestFlight/" title="TestFlight">TestFlight<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/年度总结/" title="年度总结">年度总结<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/开篇博客/" title="开篇博客">开篇博客<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/GitHub开源/" title="GitHub开源">GitHub开源<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.jianshu.com/users/a0be12563346/latest_articles" target="_blank" title="简书">简书</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://segmentfault.com/u/shaobo" target="_blank" title="SegmentFault">SegmentFault</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://toutiao.io/u/169245" target="_blank" title="开发者头条">开发者头条</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stackoverflow.com/users/5741944/serazheng" target="_blank" title="Stack OverFlow">Stack OverFlow</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://weibo.com/shaobozheng" target="_blank" title="新浪微博">新浪微博</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5738250598&verifier=469942b8&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Sera Zheng in HiJobs. <br/>
+			This is my personal blog</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/5738250598" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/serazheng" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		<a href="http://stackoverflow.com/users/5741944" target="_blank" class="icon-stack-overflow" title="stackoverflow"></a>
+		
+		
+		<a href="https://twitter.com/serazheng" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		<a href="https://www.linkedin.com/in/少博-郑-9a369910b" target="_blank" class="icon-linkedin" title="linkedin"></a>
+		
+		
+		
+		
+		
+		<a href="mailto:SeraZheng@163.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="/about" target="_blank" title="SeraZheng">SeraZheng</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'SeraZheng';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

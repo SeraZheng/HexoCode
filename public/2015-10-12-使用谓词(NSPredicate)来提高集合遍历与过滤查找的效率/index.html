@@ -1,0 +1,638 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>使用谓词(NSPredicate)来提高集合遍历与过滤查找的效率 | 郑少博的技术博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="SeraZheng">
+    
+
+    
+    <meta name="description" content="介绍&apos;NSPredicate&apos;功能的一些设计方式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用谓词(NSPredicate)来提高集合遍历与过滤查找的效率">
+<meta property="og:url" content="http://serazheng.github.io/2015-10-12-使用谓词(NSPredicate)来提高集合遍历与过滤查找的效率/index.html">
+<meta property="og:site_name" content="郑少博的技术博客">
+<meta property="og:description" content="介绍&apos;NSPredicate&apos;功能的一些设计方式">
+<meta property="og:updated_time" content="2016-04-12T06:50:49.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用谓词(NSPredicate)来提高集合遍历与过滤查找的效率">
+<meta name="twitter:description" content="介绍&apos;NSPredicate&apos;功能的一些设计方式">
+<meta name="twitter:creator" content="@serazheng">
+
+    
+    <link rel="alternative" href="/atom.xml" title="郑少博的技术博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="郑少博的技术博客" title="郑少博的技术博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="郑少博的技术博客">郑少博的技术博客</a></h1>
+				<h2 class="blog-motto">态度决定一切，生命在于奋斗！热爱生活，热爱生命！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:serazheng.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015-10-12-使用谓词(NSPredicate)来提高集合遍历与过滤查找的效率/" title="使用谓词(NSPredicate)来提高集合遍历与过滤查找的效率" itemprop="url">使用谓词(NSPredicate)来提高集合遍历与过滤查找的效率</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
+		
+  <p class="article-time">
+    <time datetime="2015-10-11T16:00:00.000Z" itemprop="datePublished"> Published 2015-10-12</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#NSPredicate"><span class="toc-number">2.</span> <span class="toc-text">NSPredicate</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#符号表达式"><span class="toc-number">3.</span> <span class="toc-text">符号表达式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#范围表示"><span class="toc-number">4.</span> <span class="toc-text">范围表示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#字符串区间"><span class="toc-number">5.</span> <span class="toc-text">字符串区间</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#通配符"><span class="toc-number">6.</span> <span class="toc-text">通配符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#正则匹配"><span class="toc-number">7.</span> <span class="toc-text">正则匹配</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#组合查询"><span class="toc-number">8.</span> <span class="toc-text">组合查询</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在开发中，我们经常会遇到一些需要，让我们从集合中查找某个值，从集合中过滤想要的内容等等，因而我们就需要<code>遍历</code>集合，加条件判断，然后获取符合条件的值。而关于<code>集合的遍历</code>是所有软件开发从业人员经常打交道的一些事情。</p>
+<p>把范围缩小到iOS开发中，关于集合地遍历的方法就有好多种，人们一直在讨论和争辩，想寻找出一种最快最有效的方法，是用<code>for循环</code>，还是<code>block</code>，是用<code>并发操作</code>，还是<code>顺序操作</code>，等等。甚至有人不惜使用<code>大数据量</code>来测试各种遍历方式的<code>效率</code>以及<code>精确度</code>。</p>
+<blockquote>
+<p>然而我认为寻找并选择一种自己认为合适的操作是最好的，简单地几个数据的集合，就用到普通的for循环，基于大数据量的遍历就需要用到并发操作。<br><a id="more"></a></p>
+<h1 id="NSPredicate"><a href="#NSPredicate" class="headerlink" title="NSPredicate"></a>NSPredicate</h1><p>而我并不会在这里展示如何遍历集合，而是提示一种在iOS开发中，用一种类似于SQL语句来过滤集合内容的方式从而避免了自己进行集合遍历的方法，就是<code>NSPredicate</code>。苹果在Cocoa touch框架给我们提供了<code>NSPredicate</code>这个类，封装了一些让我们可以直接对集合设置过滤条件的方法，而至于苹果是如何在SDK中进行数据查找地，我们并不需要关心，因为我相信它做的一定比我们好。学过<code>SQL语法</code>的人，使用<code>NSPredicate</code>会十分容易。我会在下面的内容中详细的讲述<code>NSPredicate</code>的语法规则。</p>
+</blockquote>
+<h1 id="符号表达式"><a href="#符号表达式" class="headerlink" title="符号表达式"></a>符号表达式</h1><p>如&lt;, &gt;, == , !=, 等等这些数学符号表达式，在NSPredicate的format中依然有效<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSPredicate</span> *filterPredicate = [<span class="built_in">NSPredicate</span> predicateWithFormat:<span class="string">@"SELF &gt; 10"</span>];</span><br></pre></td></tr></table></figure><br>“SELF”代表的时集合中的对象本身，此时集合对象是整型数据，在iOS中的集合可以是nil之外的任何数据类型。</p>
+<h1 id="范围表示"><a href="#范围表示" class="headerlink" title="范围表示"></a>范围表示</h1><p>如<code>IN</code>,<code>BETWEEN</code>等等这种代表范围区间的格式字符串，可以形象地称之为关键字<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSPredicate</span> *filterPredicate = [<span class="built_in">NSPredicate</span> predicateWithFormat:<span class="string">@"age BETWEEN &#123;1,5&#125;"</span>];</span><br></pre></td></tr></table></figure><br>“age”代表了集合中对象的一个实例属性，此时集合中的对象是一个个的实体。</p>
+<h1 id="字符串区间"><a href="#字符串区间" class="headerlink" title="字符串区间"></a>字符串区间</h1><p>如<code>BEGINSWITH</code>，<code>ENDSWITH</code>，<code>CONTAINS</code>，顾名思义，我们可以很容易理解他们的过滤条件<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSPredicate</span> *filterPredicate = [<span class="built_in">NSPredicate</span> predicateWithFormat:<span class="string">@"name CONTAINS[cd] %@"</span>,text];</span><br></pre></td></tr></table></figure><br>在格式化语言中，我们仍然可以自如地使用”%@“等符号表示变量。[cd]中的c表示不区分大小写，d表示不区分发音符号。</p>
+<h1 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h1><p>如<code>LIKE</code>,这些与SQL语义中的关键字定义十分相像。<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSPredicate</span> *filterPredicate = [<span class="built_in">NSPredicate</span> predicateWithFormat:<span class="string">@"name LIKE[cd] '*er'"</span>];</span><br></pre></td></tr></table></figure><br>在NSPredicate格式串中，是自动给字符串加上引号的，所以我们自定义的字符串必须加上引号（单/双）</p>
+<h1 id="正则匹配"><a href="#正则匹配" class="headerlink" title="正则匹配"></a>正则匹配</h1><p>如<code>MATCHES</code>，诸如其他的查找语言，都是需要匹配正则表达式的<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSPredicate</span> *filterPredicate = [<span class="built_in">NSPredicate</span> predicateWithFormat:<span class="string">@"name MATCHES 'Z.+e$'"</span>];</span><br><span class="line"> </span><br></pre></td></tr></table></figure></p>
+<h1 id="组合查询"><a href="#组合查询" class="headerlink" title="组合查询"></a>组合查询</h1><p>如<code>AND</code>，在设置过滤条件时，可能单一条件并不能满足我们的需要，所以我们就需要设置组合条件<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSPredicate</span> *filterPredicate = [<span class="built_in">NSPredicate</span> predicateWithFormat:<span class="string">@"name LIKE[cd] '*er'"</span> AND age &gt; <span class="number">10</span>];</span><br></pre></td></tr></table></figure></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/source/categories/Objective-C/">Objective-C</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/source/tags/OC基础/">OC基础</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://serazheng.github.io/2015-10-12-使用谓词(NSPredicate)来提高集合遍历与过滤查找的效率/" data-title="使用谓词(NSPredicate)来提高集合遍历与过滤查找的效率 | 郑少博的技术博客" data-tsina="5738250598" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015-10-25-使用KVC自定义UISearchBar外观/" title="使用KVC自定义UISearchBar外观">
+  <strong>上一篇：</strong><br/>
+  <span>
+  使用KVC自定义UISearchBar外观</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015-09-27-"Select All"功能的设计/"  title="Select All功能的设计">
+ <strong>下一篇：</strong><br/> 
+ <span>Select All功能的设计
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#NSPredicate"><span class="toc-number">2.</span> <span class="toc-text">NSPredicate</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#符号表达式"><span class="toc-number">3.</span> <span class="toc-text">符号表达式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#范围表示"><span class="toc-number">4.</span> <span class="toc-text">范围表示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#字符串区间"><span class="toc-number">5.</span> <span class="toc-text">字符串区间</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#通配符"><span class="toc-number">6.</span> <span class="toc-text">通配符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#正则匹配"><span class="toc-number">7.</span> <span class="toc-text">正则匹配</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#组合查询"><span class="toc-number">8.</span> <span class="toc-text">组合查询</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="serazheng" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/source/categories/Objective-C/" title="Objective-C">Objective-C<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Xcode/" title="Xcode">Xcode<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/iOS/" title="iOS">iOS<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/开发心得/" title="开发心得">开发心得<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/设计/" title="设计">设计<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/source/tags/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UTI/" title="UTI">UTI<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UIKit/" title="UIKit">UIKit<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/APNS/" title="APNS">APNS<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/注释/" title="注释">注释<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/OC基础/" title="OC基础">OC基础<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/设计/" title="设计">设计<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/CoreAnimation/" title="CoreAnimation">CoreAnimation<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/架构/" title="架构">架构<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/内存管理/" title="内存管理">内存管理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/TestFlight/" title="TestFlight">TestFlight<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/年度总结/" title="年度总结">年度总结<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/开篇博客/" title="开篇博客">开篇博客<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/GitHub开源/" title="GitHub开源">GitHub开源<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.jianshu.com/users/a0be12563346/latest_articles" target="_blank" title="简书">简书</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://segmentfault.com/u/shaobo" target="_blank" title="SegmentFault">SegmentFault</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://toutiao.io/u/169245" target="_blank" title="开发者头条">开发者头条</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stackoverflow.com/users/5741944/serazheng" target="_blank" title="Stack OverFlow">Stack OverFlow</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://weibo.com/shaobozheng" target="_blank" title="新浪微博">新浪微博</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5738250598&verifier=469942b8&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Sera Zheng in HiJobs. <br/>
+			This is my personal blog</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/5738250598" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/serazheng" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		<a href="http://stackoverflow.com/users/5741944" target="_blank" class="icon-stack-overflow" title="stackoverflow"></a>
+		
+		
+		<a href="https://twitter.com/serazheng" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		<a href="https://www.linkedin.com/in/少博-郑-9a369910b" target="_blank" class="icon-linkedin" title="linkedin"></a>
+		
+		
+		
+		
+		
+		<a href="mailto:SeraZheng@163.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="/about" target="_blank" title="SeraZheng">SeraZheng</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'SeraZheng';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

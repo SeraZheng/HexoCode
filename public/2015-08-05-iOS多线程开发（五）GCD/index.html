@@ -1,0 +1,633 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>iOS多线程开发（五）GCD开发 | 郑少博的技术博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="SeraZheng">
+    
+
+    
+    <meta name="description" content="前言我们在这一篇继之前的文章，记录另外一种更简单得使用多线程的方式，那就是GCD（Grand Central Dispatch）。GCD是libdispatch（Apple库）的代名词，为多核设备的并发处理和应用程序的性能优化提供了良好的支持。学习GCD之前，希望大家可以先温顾一下我在“多线程基础”这篇文章中提到的一些基础概念：队列，串行与并行，同步与异步。GCD使用C语言编写的一套提供并发处理的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS多线程开发（五）GCD开发">
+<meta property="og:url" content="http://serazheng.github.io/2015-08-05-iOS多线程开发（五）GCD/index.html">
+<meta property="og:site_name" content="郑少博的技术博客">
+<meta property="og:description" content="前言我们在这一篇继之前的文章，记录另外一种更简单得使用多线程的方式，那就是GCD（Grand Central Dispatch）。GCD是libdispatch（Apple库）的代名词，为多核设备的并发处理和应用程序的性能优化提供了良好的支持。学习GCD之前，希望大家可以先温顾一下我在“多线程基础”这篇文章中提到的一些基础概念：队列，串行与并行，同步与异步。GCD使用C语言编写的一套提供并发处理的">
+<meta property="og:updated_time" content="2016-04-12T06:48:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS多线程开发（五）GCD开发">
+<meta name="twitter:description" content="前言我们在这一篇继之前的文章，记录另外一种更简单得使用多线程的方式，那就是GCD（Grand Central Dispatch）。GCD是libdispatch（Apple库）的代名词，为多核设备的并发处理和应用程序的性能优化提供了良好的支持。学习GCD之前，希望大家可以先温顾一下我在“多线程基础”这篇文章中提到的一些基础概念：队列，串行与并行，同步与异步。GCD使用C语言编写的一套提供并发处理的">
+<meta name="twitter:creator" content="@serazheng">
+
+    
+    <link rel="alternative" href="/atom.xml" title="郑少博的技术博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="郑少博的技术博客" title="郑少博的技术博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="郑少博的技术博客">郑少博的技术博客</a></h1>
+				<h2 class="blog-motto">态度决定一切，生命在于奋斗！热爱生活，热爱生命！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:serazheng.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015-08-05-iOS多线程开发（五）GCD/" title="iOS多线程开发（五）GCD开发" itemprop="url">iOS多线程开发（五）GCD开发</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
+		
+  <p class="article-time">
+    <time datetime="2015-08-04T16:00:00.000Z" itemprop="datePublished"> Published 2015-08-05</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dispatch-Queues"><span class="toc-number">2.</span> <span class="toc-text">Dispatch Queues</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Synchronous-and-Asynchronous"><span class="toc-number">3.</span> <span class="toc-text">Synchronous and Asynchronous</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#单例线程安全"><span class="toc-number">4.</span> <span class="toc-text">单例线程安全</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dispatch-Group"><span class="toc-number">5.</span> <span class="toc-text">Dispatch Group</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#其他用法"><span class="toc-number">6.</span> <span class="toc-text">其他用法</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我们在这一篇继之前的文章，记录另外一种更简单得使用多线程的方式，那就是<code>GCD</code>（Grand Central Dispatch）。<code>GCD</code>是libdispatch（Apple库）的代名词，为多核设备的并发处理和应用程序的性能优化提供了良好的支持。学习GCD之前，希望大家可以先温顾一下我在“多线程基础”这篇文章中提到的一些基础概念：<code>队列</code>，<code>串行与并行</code>，<code>同步与异步</code>。GCD使用C语言编写的一套提供并发处理的函数库，对于C语言熟悉的朋友，理解和使用起来应该会更简单。<br><a id="more"></a></p>
+<h1 id="Dispatch-Queues"><a href="#Dispatch-Queues" class="headerlink" title="Dispatch Queues"></a>Dispatch Queues</h1><p>我们的程序进程中有一个<code>主队列</code>（main queue），所有与UI处理相关的操作都必须在主队列进行。我们可以使用<code>dispatch_get_main_queue</code>函数获取到主队列的引用，而且主队列是一个<code>串行队列</code>，所有的任务都是一个一个处理的。此外，系统还为我们提供了<code>并行队列</code>，就是<code>全局调度队列</code>（Global Dispatch Queue），按优先级不同可以分为：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DISPATCH_QUEUE_PRIORITY_HIGH；</span><br><span class="line">DISPATCH_QUEUE_DEFAULT；</span><br><span class="line">DISPATCH_QUEUE_LOW；</span><br><span class="line">DISPATCH_QUEUE_PRIORITY_BACKGROUND；</span><br></pre></td></tr></table></figure></p>
+<p>我们可以使用<code>dispatch_get_global_queue</code>获取全局调度队列的引用。此外，我们也可以使用<code>dispatch_queue_create</code>函数创建自己的队列：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">　</span><br><span class="line"><span class="built_in">dispatch_queue_t</span>   myQueue = dispatch_queue_create(<span class="string">"myQueue"</span>,<span class="literal">NULL</span>);</span><br></pre></td></tr></table></figure></p>
+<h1 id="Synchronous-and-Asynchronous"><a href="#Synchronous-and-Asynchronous" class="headerlink" title="Synchronous and Asynchronous"></a>Synchronous and Asynchronous</h1><p>GCD提供了俩个函数分别代表了<code>同步</code>与<code>异步</code>操作：<code>dispatch_sync</code>代表<code>同步</code>执行任务，<code>dispatch_async</code>代表<code>异步</code>执行操作。这俩个函数都结合<code>block</code>进行使用的。</p>
+<h1 id="单例线程安全"><a href="#单例线程安全" class="headerlink" title="单例线程安全"></a>单例线程安全</h1><p><code>单例模式</code>是开发中常常应用到的一种设计模式，而单例也会遇到线程安全的问题，如果多个线程同时访问并初始化一个单例对象，就会可能破坏掉单例的安全性，即使得资源变得不可信。GCD提供了单例线程的安全处理：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">+ (instancetype)sharedContext</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">static</span> MyContext *sharedContext = <span class="literal">nil</span>;</span><br><span class="line">staticdispatch_once_t onceToken;</span><br><span class="line"><span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</span><br><span class="line">sharedContext = [[MyContext alloc] init];</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"Singleton has memory address at: %@"</span>, sharedContext);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">return</span> sharedPhotoManager;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="Dispatch-Group"><a href="#Dispatch-Group" class="headerlink" title="Dispatch Group"></a>Dispatch Group</h1><p>如果当前进程中有俩个非主线程，而这俩个线程是并行执行的，现在的需求是当这俩个线程都执行完后，汇总结果再执行下面的任务。针对这种情况，我们就可以应用到<code>dispatch_group</code>的概念，将多个线程同时加入到group中，然后使用<code>dispatch_group_async</code>函数并行执行所有的线程，最后使用<code>dispatch_group_notify</code>函数来汇总结果。</p>
+<h1 id="其他用法"><a href="#其他用法" class="headerlink" title="其他用法"></a>其他用法</h1><p>GCD中还提供了一些高级用法来帮助我们更好地使用多线程。例如，使用<code>dispatch_after</code>和<code>dispatch_time</code>来做一些延迟程序执行时间的事情，使用<code>dispatch_source</code>控制共享资源等等。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/source/categories/多线程/">多线程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/source/tags/多线程/">多线程</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://serazheng.github.io/2015-08-05-iOS多线程开发（五）GCD/" data-title="iOS多线程开发（五）GCD开发 | 郑少博的技术博客" data-tsina="5738250598" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015-08-15-重写prepareForReuse来重用UITableViewCell/" title="重写prepareForReuse来重用UITableViewCell">
+  <strong>上一篇：</strong><br/>
+  <span>
+  重写prepareForReuse来重用UITableViewCell</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015-08-04-iOS多线程开发（四）NSOperation和NSOperationQueue/"  title="iOS多线程开发（四）NSOperation和NSOperationQueue">
+ <strong>下一篇：</strong><br/> 
+ <span>iOS多线程开发（四）NSOperation和NSOperationQueue
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dispatch-Queues"><span class="toc-number">2.</span> <span class="toc-text">Dispatch Queues</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Synchronous-and-Asynchronous"><span class="toc-number">3.</span> <span class="toc-text">Synchronous and Asynchronous</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#单例线程安全"><span class="toc-number">4.</span> <span class="toc-text">单例线程安全</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dispatch-Group"><span class="toc-number">5.</span> <span class="toc-text">Dispatch Group</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#其他用法"><span class="toc-number">6.</span> <span class="toc-text">其他用法</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="serazheng" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/source/categories/Objective-C/" title="Objective-C">Objective-C<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Xcode/" title="Xcode">Xcode<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/iOS/" title="iOS">iOS<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/开发心得/" title="开发心得">开发心得<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/设计/" title="设计">设计<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/source/tags/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UTI/" title="UTI">UTI<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UIKit/" title="UIKit">UIKit<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/APNS/" title="APNS">APNS<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/注释/" title="注释">注释<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/OC基础/" title="OC基础">OC基础<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/设计/" title="设计">设计<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/CoreAnimation/" title="CoreAnimation">CoreAnimation<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/架构/" title="架构">架构<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/内存管理/" title="内存管理">内存管理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/TestFlight/" title="TestFlight">TestFlight<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/年度总结/" title="年度总结">年度总结<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/开篇博客/" title="开篇博客">开篇博客<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/GitHub开源/" title="GitHub开源">GitHub开源<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.jianshu.com/users/a0be12563346/latest_articles" target="_blank" title="简书">简书</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://segmentfault.com/u/shaobo" target="_blank" title="SegmentFault">SegmentFault</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://toutiao.io/u/169245" target="_blank" title="开发者头条">开发者头条</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stackoverflow.com/users/5741944/serazheng" target="_blank" title="Stack OverFlow">Stack OverFlow</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://weibo.com/shaobozheng" target="_blank" title="新浪微博">新浪微博</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5738250598&verifier=469942b8&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Sera Zheng in HiJobs. <br/>
+			This is my personal blog</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/5738250598" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/serazheng" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		<a href="http://stackoverflow.com/users/5741944" target="_blank" class="icon-stack-overflow" title="stackoverflow"></a>
+		
+		
+		<a href="https://twitter.com/serazheng" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		<a href="https://www.linkedin.com/in/少博-郑-9a369910b" target="_blank" class="icon-linkedin" title="linkedin"></a>
+		
+		
+		
+		
+		
+		<a href="mailto:SeraZheng@163.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="/about" target="_blank" title="SeraZheng">SeraZheng</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'SeraZheng';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

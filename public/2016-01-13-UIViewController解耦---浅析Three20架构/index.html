@@ -1,0 +1,655 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>UIViewController解耦---浅析Three20架构 | 郑少博的技术博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="SeraZheng">
+    
+
+    
+    <meta name="description" content="根据经典的MVC、MVVM架构解析Three20中的架构模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UIViewController解耦---浅析Three20架构">
+<meta property="og:url" content="http://serazheng.github.io/2016-01-13-UIViewController解耦---浅析Three20架构/index.html">
+<meta property="og:site_name" content="郑少博的技术博客">
+<meta property="og:description" content="根据经典的MVC、MVVM架构解析Three20中的架构模式">
+<meta property="og:image" content="http://serazheng.github.io/images/Three20.png">
+<meta property="og:image" content="http://serazheng.github.io/images/Three20_Advance.png">
+<meta property="og:updated_time" content="2016-04-12T06:53:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="UIViewController解耦---浅析Three20架构">
+<meta name="twitter:description" content="根据经典的MVC、MVVM架构解析Three20中的架构模式">
+<meta name="twitter:image" content="http://serazheng.github.io/images/Three20.png">
+<meta name="twitter:creator" content="@serazheng">
+
+    
+    <link rel="alternative" href="/atom.xml" title="郑少博的技术博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="郑少博的技术博客" title="郑少博的技术博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="郑少博的技术博客">郑少博的技术博客</a></h1>
+				<h2 class="blog-motto">态度决定一切，生命在于奋斗！热爱生活，热爱生命！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:serazheng.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016-01-13-UIViewController解耦---浅析Three20架构/" title="UIViewController解耦---浅析Three20架构" itemprop="url">UIViewController解耦---浅析Three20架构</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
+		
+  <p class="article-time">
+    <time datetime="2016-01-12T16:00:00.000Z" itemprop="datePublished"> Published 2016-01-13</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#架构"><span class="toc-number">2.</span> <span class="toc-text">架构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UIViewController瘦身"><span class="toc-number">3.</span> <span class="toc-text">UIViewController瘦身</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Three20架构"><span class="toc-number">4.</span> <span class="toc-text">Three20架构</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Three20是一款由Facebook开源的框架，由大神<a href="https://en.wikipedia.org/wiki/Joe_Hewitt_(programmer" target="_blank" rel="external">Joe Hewitt</a>)创建，曾经风靡一时，被无数开发者观阅。Three20主要提供了UI模块、Network模块以及相关的一些工具。Three20自开源之初就褒贬不一，有人称赞它强大的UI工具，也有人在诟病Three20各个模块之间的耦合度太高，而且更多人在抱怨Three20极少的开发文档，我想这些大概也是Three20在苹果发布iOS6之后就停止了更新维护的原因吧。大神<a href="https://en.wikipedia.org/wiki/Joe_Hewitt_(programmer" target="_blank" rel="external">Joe Hewitt</a>)创建的在Github上的源码早已删除，目前只有少数人在GitHub上为自己的项目维护。而我也是有幸在某个项目中见识到了曾经耳闻，却未目睹的Three20框架，因此才有了这篇文章。<br><a id="more"></a></p>
+<h1 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h1><p>最近大家都在讨论MVC、MVVM以及MVP三种在移动端开发中常用到的架构模式，究竟是哪种架构最强大，最适合移动开发者使用。这里笔者也阐述一下个人意见，有句方言叫“树挪死，人挪活”，个人认为，架构是死的，开发者是活的，我们不需要局限于哪一种架构的模式之下，看到大家都在用MVVM，于是花大成本将MVC架构模式的老项目重构成了MVVM架构，这种重构个人看来其实并没有意义。更多的架构话题就不想在这里讨论了，笔者推荐几篇大神们关于架构的见解。</p>
+<ul>
+<li><p><a href="http://blog.devtang.com/blog/2015/11/02/mvc-and-mvvm/" target="_blank" rel="external">被误解的 MVC 和被神化的 MVVM</a></p>
+<p>  这是一篇被早已被翻烂了的文章，起码我个人反复阅读了数次，由家喻户晓的<strong><a href="http://blog.devtang.com" target="_blank" rel="external">唐巧</a></strong>大神编写。</p>
+</li>
+<li><p><a href="http://www.cocoachina.com/ios/20160108/14916.html" target="_blank" rel="external">iOS 架构模式–解密 MVC，MVP，MVVM以及VIPER架构</a></p>
+<p>  最近在Cocoa China上发表的一篇译文，笔者之前看过俩次原文，讲的比较形象。</p>
+</li>
+<li><p><a href="http://www.ruanyifeng.com/blog/2015/02/mvcmvp_mvvm.html" target="_blank" rel="external">MVC，MVP 和 MVVM 的图示</a></p>
+<p>  大神<strong><a href="http://www.ruanyifeng.com/about.html" target="_blank" rel="external">阮一峰</a></strong>的博文，以图形展示的方式使得各层结构更加清晰明了。</p>
+</li>
+<li><p><a href="http://gracelancy.com/blog/2016/01/06/ape-ios-arch-design/" target="_blank" rel="external">猿题库 iOS 客户端架构设计</a></p>
+<p>  <code>猿题库 iOS客户端</code>开发者<strong><a href="http://gracelancy.com/about/" target="_blank" rel="external">蓝晨钰</a></strong>的博文，以实际项目<code>猿题库</code>详解了架构设计</p>
+</li>
+</ul>
+<h1 id="UIViewController瘦身"><a href="#UIViewController瘦身" class="headerlink" title="UIViewController瘦身"></a>UIViewController瘦身</h1><p>架构模式并不是限制思维，相反应该是发散思维，我们并不应该为了架构而架构，架构应该是服务于我们的代码逻辑，打造更具有扩展性和健壮的代码结构。就比如，大多数开发者都会遇到一个同样的问题，随着项目一天天的壮大，功能越来越多，需求越来越多，而我们的UIViewController也变得越来越臃肿。在上面推荐的博文中，笔者们都或多或少的阐述了如何打造更轻量级的UIViewController，大都列举了一些共性策略:</p>
+<ul>
+<li><p>将一个界面中的数据获取抽象成一个类，这里面细分一下，包括了网络请求和数据库缓存，我们可以针对这俩点再次封装成俩个类。</p>
+</li>
+<li><p>将一个界面中的数据处理逻辑抽象成一个类，这里面包含了各种数据转换和算法逻辑，比如数据检索，数据遍历等。</p>
+</li>
+<li><p>将一个界面中数据传递到UIView视图的过程抽象成一个模型类，这里面就包含了对应到UIView视图的每一个数据的传递，比如icon图标，title标题，comment评论内容等。</p>
+</li>
+<li><p>将一个界面中所有展示的UIView视图的添加和渲染抽象成一个类，这里包含了添加控件，自定义动画等。这个对视图的封装仍然可以细分，每一个自定义控件都可以单独封装，因为这样可以完美的在其他的UIViewController达到复用的目的。</p>
+</li>
+</ul>
+<p>而完成了上述抽象之后，就会发现我们需要在UIViewController中完成的工作仅仅是处理视图交互逻辑和数据传递逻辑，这样我们的UIViewController就比较容易维护了。</p>
+<h1 id="Three20架构"><a href="#Three20架构" class="headerlink" title="Three20架构"></a>Three20架构</h1><p>每一种框架的兴起和衰落都有其相应的时势和必然性。虽然Three20饱受诟病，早已跌落神坛，但是它的存在是有一定道理的。虽然它在模块之间的耦合度较高，但是个人认为它对UIViewController的抽象和封装也是一个非常好的借鉴。在这里以Three20中对<code>TTTableViewController</code>的解耦为例，先上图看一下<code>TTTableViewController</code>包含的模块：</p>
+<img src="/images/Three20.png">
+<p>这里根据上面的结构图具体地解释一下解耦的设计方式。<strong><code>TTTableViewController</code></strong>的设计遵从了经典的<strong><code>MVC</code></strong>模式，<strong><code>TTModel</code></strong>负责数据的获取和处理逻辑，<strong><code>TTTableView</code></strong>负责视图展示,<strong><code>TTTableViewController</code></strong>负责<strong><code>TTModel</code></strong>与<strong><code>TTTableView</code></strong>之间的通信逻辑和界面的控件添加渲染。而<strong><code>TTTableViewController</code></strong>在顺应了<strong><code>MVC</code></strong>模式的前提下，也做了一些扩展，它将<strong><code>TTTableViewDatasource</code></strong>接收数据传递的逻辑抽象出来封装成了<strong><code>TTTableItem</code></strong>。而<strong><code>TTTableItem</code></strong>就是关联<strong><code>TTModel</code></strong>传递数据的过程，因而我们也可以把这一层称作是<strong><code>MVVM</code></strong>架构模式中的<strong><code>ViewModel</code></strong></p>
+<p>根据上面的图示，我们可以看到获取数据的逻辑都在<strong><code>TTModel</code></strong>中，而且界面控件添加和动画渲染这些逻辑仍然都在<strong><code>TTTableViewController</code></strong>中，因此我根据大神们的一些建议，对项目中的Three20进行了一下强化，先上图看一下增加的结构：</p>
+<img src="/images/Three20_Advance.png">
+<p>可以清晰地看到，我将<strong><code>TTModel</code></strong>中处理缓存数据的逻辑抽象出来，单独放在了<strong><code>TTCacheModel</code></strong>中，此外还将<strong><code>TTTableViewController</code></strong>中添加控件和渲染动画的逻辑抽象出来，放到了<strong><code>TTViewRender</code></strong>中，这样<strong><code>TTTableViewController</code></strong>就只关心界面交互以及<strong><code>TTModel</code></strong>和<strong><code>TTTableItem</code></strong>之间的数据传递逻辑。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/source/categories/开发心得/">开发心得</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/source/tags/架构/">架构</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://serazheng.github.io/2016-01-13-UIViewController解耦---浅析Three20架构/" data-title="UIViewController解耦---浅析Three20架构 | 郑少博的技术博客" data-tsina="5738250598" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2015-12-31-末班车上一个程序猿的年度总结/"  title="末班车上一个程序猿的年度总结">
+ <strong>下一篇：</strong><br/> 
+ <span>末班车上一个程序猿的年度总结
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#架构"><span class="toc-number">2.</span> <span class="toc-text">架构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UIViewController瘦身"><span class="toc-number">3.</span> <span class="toc-text">UIViewController瘦身</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Three20架构"><span class="toc-number">4.</span> <span class="toc-text">Three20架构</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="serazheng" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/source/categories/Objective-C/" title="Objective-C">Objective-C<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Xcode/" title="Xcode">Xcode<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/iOS/" title="iOS">iOS<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/开发心得/" title="开发心得">开发心得<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/设计/" title="设计">设计<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/source/tags/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UTI/" title="UTI">UTI<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UIKit/" title="UIKit">UIKit<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/APNS/" title="APNS">APNS<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/注释/" title="注释">注释<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/OC基础/" title="OC基础">OC基础<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/设计/" title="设计">设计<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/CoreAnimation/" title="CoreAnimation">CoreAnimation<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/架构/" title="架构">架构<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/内存管理/" title="内存管理">内存管理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/TestFlight/" title="TestFlight">TestFlight<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/年度总结/" title="年度总结">年度总结<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/开篇博客/" title="开篇博客">开篇博客<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/GitHub开源/" title="GitHub开源">GitHub开源<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.jianshu.com/users/a0be12563346/latest_articles" target="_blank" title="简书">简书</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://segmentfault.com/u/shaobo" target="_blank" title="SegmentFault">SegmentFault</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://toutiao.io/u/169245" target="_blank" title="开发者头条">开发者头条</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stackoverflow.com/users/5741944/serazheng" target="_blank" title="Stack OverFlow">Stack OverFlow</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://weibo.com/shaobozheng" target="_blank" title="新浪微博">新浪微博</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5738250598&verifier=469942b8&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Sera Zheng in HiJobs. <br/>
+			This is my personal blog</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/5738250598" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/serazheng" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		<a href="http://stackoverflow.com/users/5741944" target="_blank" class="icon-stack-overflow" title="stackoverflow"></a>
+		
+		
+		<a href="https://twitter.com/serazheng" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		<a href="https://www.linkedin.com/in/少博-郑-9a369910b" target="_blank" class="icon-linkedin" title="linkedin"></a>
+		
+		
+		
+		
+		
+		<a href="mailto:SeraZheng@163.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="/about" target="_blank" title="SeraZheng">SeraZheng</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'SeraZheng';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
