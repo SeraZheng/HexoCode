@@ -1,0 +1,754 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>通过UIActivityViewController实现更多分享服务 | 郑少博的技术博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="SeraZheng">
+    
+
+    
+    <meta name="description" content="介绍UIActivityViewController以及如何在iOS系统上实现跨App之间的内容分享">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过UIActivityViewController实现更多分享服务">
+<meta property="og:url" content="http://serazheng.github.io/2015-12-15-通过UIActivityViewController实现更多分享服务/index.html">
+<meta property="og:site_name" content="郑少博的技术博客">
+<meta property="og:description" content="介绍UIActivityViewController以及如何在iOS系统上实现跨App之间的内容分享">
+<meta property="og:image" content="http://serazheng.github.io/images/展示俩个Button.png">
+<meta property="og:image" content="http://serazheng.github.io/images/展示UIActivityViewController.png">
+<meta property="og:image" content="http://serazheng.github.io/images/隐藏AirDrop.png">
+<meta property="og:image" content="http://serazheng.github.io/images/自定义UIActivity.png">
+<meta property="og:updated_time" content="2016-06-27T08:00:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="通过UIActivityViewController实现更多分享服务">
+<meta name="twitter:description" content="介绍UIActivityViewController以及如何在iOS系统上实现跨App之间的内容分享">
+<meta name="twitter:image" content="http://serazheng.github.io/images/展示俩个Button.png">
+<meta name="twitter:creator" content="@serazheng">
+
+    
+    <link rel="alternative" href="/atom.xml" title="郑少博的技术博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="郑少博的技术博客" title="郑少博的技术博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="郑少博的技术博客">郑少博的技术博客</a></h1>
+				<h2 class="blog-motto">态度决定一切，生命在于奋斗！热爱生活，热爱生命！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:serazheng.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015-12-15-通过UIActivityViewController实现更多分享服务/" title="通过UIActivityViewController实现更多分享服务" itemprop="url">通过UIActivityViewController实现更多分享服务</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
+		
+  <p class="article-time">
+    <time datetime="2015-12-14T16:00:00.000Z" itemprop="datePublished"> Published 2015-12-15</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#简介"><span class="toc-number">2.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#准备"><span class="toc-number">3.</span> <span class="toc-text">准备</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#初始化"><span class="toc-number">4.</span> <span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#视图展示"><span class="toc-number">5.</span> <span class="toc-text">视图展示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#excludedActivityTypes"><span class="toc-number">6.</span> <span class="toc-text">excludedActivityTypes</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义UIActivity服务"><span class="toc-number">7.</span> <span class="toc-text">自定义UIActivity服务</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#补充之AirDrop"><span class="toc-number">8.</span> <span class="toc-text">补充之AirDrop</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我在<a href="http://www.jianshu.com/p/3f03897cf98a" target="_blank" rel="external">通过UIDocumentInteractionController预览和分享”史蒂夫•乔布斯传”</a>这篇文章中，详细讲了<code>UIDocumentInteractionController</code>的用途和使用方法。而在<code>iOS 6 SDK</code>中,苹果提供了<code>UIActivityViewController</code>来让我们可以使用更多地服务。这篇文章，我就来介绍一下怎么通过<code>UIActivityViewController</code>实现更多地服务。<br><a id="more"></a></p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>打开<code>UIActivityViewController</code>的API文档，我们可以看到<code>UIActivityViewController</code>的声明。<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NS_CLASS_AVAILABLE_IOS</span>(<span class="number">6</span>_0) __TVOS_PROHIBITED <span class="class"><span class="keyword">@interface</span> <span class="title">UIActivityViewController</span> : <span class="title">UIViewController</span></span></span><br></pre></td></tr></table></figure></p>
+<p>我们可以看出<code>UIActivityViewController</code>是在<code>iOS 6</code>开始支持的，同样是不能在Apple TV的开发中使用。而且<code>UIActivityViewController</code>是直接继承<code>UIViewController</code>的，这意味着我们需要自己来展示和解散视图。</p>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><p>我使用在<code>UIDocumentInteractionController</code>测试中使用的Demo,GitHub地址是：<a href="https://github.com/SeraZheng/ZSDocumentInteractionTest" target="_blank" rel="external">ZSDocumentInteractionTest</a>。然后添加一个新的Button作为<code>UIActivityViewController</code>的触发事件，运行程序，就可以看到下面的界面啦(过程自行想象，哈哈)</p>
+<img src="/images/展示俩个Button.png">
+<h1 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h1><p>接着我们在Button的触发方法里面开始操作<code>UIActivityViewController</code>来提供服务。首先，我们需要初始化一个<code>UIActivityViewController</code>的实例，<code>UIActivityViewController</code>提供了一个初始化方法：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (instancetype)initWithActivityItems:(<span class="built_in">NSArray</span> *)activityItems applicationActivities:(nullable <span class="built_in">NSArray</span>&lt;__kindof <span class="built_in">UIActivity</span> *&gt; *)applicationActivities <span class="built_in">NS_DESIGNATED_INITIALIZER</span>;</span><br></pre></td></tr></table></figure></p>
+<p>官方文档对这俩个参数有详细的解释：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">参数</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">activityItems</td>
+<td style="text-align:left">The array of data objects on which to perform the activity. The type of objects in the array is variable and dependent on the data your application manages. For example, the data might consist of one or more string or image objects representing the currently selected content.     Instead of actual data objects, the objects in this array can be objects that adopt the UIActivityItemSource protocol, such as UIActivityItemProvider objects. Source and provider objects act as proxies for the corresponding data in situations where you do not want to provide that data until it is needed. Note that you should not resuse an activity view controller object that includes a UIActivityItemProvider object in its activityItems array.This array must not be nil and must contain at least one object.</td>
+</tr>
+<tr>
+<td style="text-align:left">applicationActivities</td>
+<td style="text-align:left">An array of UIActivity objects representing the custom services that your application supports. This parameter may be nil.</td>
+</tr>
+</tbody>
+</table>
+<p>大概意思是这个方法接收俩个数组类型的参数，第一个数组内的对象代表的是我们想要操作的数据的一些表征，而且这个数组至少需要一个值，比如我们PDF文档的名称，URL；第二个数组指定了<code>泛型</code>，数组内的对象必须是<code>UIActivity</code>类型的对象，代表的是iOS系统支持的我们自定义的服务，关于这点我在后面<code>自定义UIActivity服务</code>的内容中会讲解，现在我们暂时置为<code>nil</code>。代码如下：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">IBAction</span>)presentPDFActivityView:(<span class="keyword">id</span>)sender &#123;</span><br><span class="line">    <span class="built_in">UIActivityViewController</span> *activity = [[<span class="built_in">UIActivityViewController</span> alloc] initWithActivityItems:@[<span class="string">@"Steve Jobs by waiter lsaacson"</span>, [[<span class="built_in">NSBundle</span> mainBundle] URLForResource:<span class="string">@"Steve"</span> withExtension:<span class="string">@"pdf"</span>]] applicationActivities:<span class="literal">nil</span>];</span><br></pre></td></tr></table></figure></p>
+<h1 id="视图展示"><a href="#视图展示" class="headerlink" title="视图展示"></a>视图展示</h1><p><code>UIActivityViewController</code>是直接继承<code>UIViewController</code>的，看到这，你想象可以通过自己的需求来使用不同的方式展示<code>UIActivityViewController</code>啦，然而事与愿违。</p>
+<blockquote>
+<p>官方文档中是这么说的: “When presenting the view controller, you must do so using the appropriate means for the current device. On iPad, you must present the view controller in a popover. On iPhone and iPod touch, you must present it modally”。 大概意思是说，展示<code>UIActivityViewController</code>的时候需要根据当前的设备类型选择合适的展示方式，在iPad设备上就必须在’popover’视图里面展示，在其他设备上，必须以模态视图展示。</p>
+</blockquote>
+<p>个人认为开发必须持怀疑和验证的态度，所以我尝试在一个<code>UINavigationController</code>中push一个<code>UIActivityController</code>,代码如下：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">IBAction</span>)presentPDFActivityView:(<span class="keyword">id</span>)sender &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">UIActivityViewController</span> *activity = [[<span class="built_in">UIActivityViewController</span> alloc] initWithActivityItems:@[<span class="string">@"Steve Jobs by waiter lsaacson"</span>, [[<span class="built_in">NSBundle</span> mainBundle] URLForResource:<span class="string">@"Steve"</span> withExtension:<span class="string">@"pdf"</span>]] applicationActivities:<span class="literal">nil</span>];</span><br><span class="line">    [<span class="keyword">self</span>.navigationController pushViewController:activity animated:<span class="literal">YES</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后运行程序，点击Button，意料之中程序崩溃掉了，给出我们的错误反馈是：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">2015-12-31 15:03:03.733 ZSDocumentInteractionTest[9307:971136] *** Terminating app due to uncaught exception <span class="string">'NSGenericException'</span>, reason: <span class="string">'UIActivityViewController can only be used modally or as contentViewController in popover on iPad.'</span></span><br><span class="line">*** First throw call stack:</span><br><span class="line">(</span><br><span class="line">	0   CoreFoundation                      0x0000000103197e65 __exceptionPreprocess + 165</span><br><span class="line">	1   libobjc.A.dylib                     0x0000000102c10deb objc_exception_throw + 48</span><br><span class="line">	2   CoreFoundation                      0x0000000103197d9d +[NSException raise:format:] + 205</span><br><span class="line">	3   UIKit                               0x0000000103e68e55 -[UIActivityViewController viewDidAppear:] + 533</span><br><span class="line">	4   UIKit                               0x00000001036e0949 -[UIViewController _<span class="built_in">set</span>ViewAppearState:isAnimating:] + 830</span><br><span class="line">	5   UIKit                               0x00000001036e12cc -[UIViewController _endAppearanceTransition:] + 262</span><br><span class="line">	6   UIKit                               0x000000010371bf63 -[UINavigationController navigationTransitionView:didEndTransition:fromView:toView:] + 1290</span><br><span class="line">	7   UIKit                               0x0000000103711d24 __49-[UINavigationController _startCustomTransition:]_block_invoke + 233</span><br><span class="line">	8   UIKit                               0x0000000103f4ad20 -[_UIViewControllerTransitionContext completeTransition:] + 101</span><br><span class="line">	9   UIKit                               0x000000010352cfff __53-[_UINavigationParallaxTransition animateTransition:]_block_invoke95 + 834</span><br><span class="line">	10  UIKit                               0x00000001035f1076 -[UIViewAnimationBlockDelegate _didEndBlockAnimation:finished:context:] + 644</span><br><span class="line">	11  UIKit                               0x00000001035ce2af -[UIViewAnimationState sendDelegateAnimationDidStop:finished:] + 241</span><br><span class="line">	12  UIKit                               0x00000001035ce65e -[UIViewAnimationState animationDidStop:finished:] + 80</span><br><span class="line">	13  QuartzCore                          0x00000001070c2fa0 _ZN2CA5Layer23run_animation_callbacksEPv + 308</span><br><span class="line">	14  libdispatch.dylib                   0x000000010589f49b _dispatch_client_callout + 8</span><br><span class="line">	15  libdispatch.dylib                   0x00000001058872af _dispatch_main_queue_callback_4CF + 1738</span><br><span class="line">	16  CoreFoundation                      0x00000001030f7d09 __CFRUNLOOP_IS_SERVICING_THE_MAIN_DISPATCH_QUEUE__ + 9</span><br><span class="line">	17  CoreFoundation                      0x00000001030b92c9 __CFRunLoopRun + 2073</span><br><span class="line">	18  CoreFoundation                      0x00000001030b8828 CFRunLoopRunSpecific + 488</span><br><span class="line">	19  GraphicsServices                    0x0000000106954ad2 GSEventRunModal + 161</span><br><span class="line">	20  UIKit                               0x0000000103544610 UIApplicationMain + 171</span><br><span class="line">	21  ZSDocumentInteractionTest           0x000000010270b6af main + 111</span><br><span class="line">	22  libdyld.dylib                       0x00000001058d392d start + 1</span><br><span class="line">)</span><br><span class="line">libc++abi.dylib: terminating with uncaught exception of <span class="built_in">type</span> NSException</span><br><span class="line">(lldb) </span><br></pre></td></tr></table></figure></p>
+<p>我们看出错误说明是<code>&quot;UIActivityViewController can only be used modally or as contentViewController in popover on iPad.&quot;</code>因此我们需要更换一下展示方法，在手机上已一个模态视图的方式展示，而在iPad上则作为<code>popover</code>的内容视图展示。代码如下：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">IBAction</span>)presentPDFActivityView:(<span class="keyword">id</span>)sender &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">UIActivityViewController</span> *activity = [[<span class="built_in">UIActivityViewController</span> alloc] initWithActivityItems:@[[[<span class="built_in">NSBundle</span> mainBundle] URLForResource:<span class="string">@"Steve"</span> withExtension:<span class="string">@"pdf"</span>]] applicationActivities:@[[[ZSCustomActivity alloc] init]]];</span><br><span class="line">    activity.excludedActivityTypes = @[<span class="built_in">UIActivityTypeAirDrop</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// incorrect usage</span></span><br><span class="line">    <span class="comment">// [self.navigationController pushViewController:activity animated:YES];</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">UIPopoverPresentationController</span> *popover = activity.popoverPresentationController;</span><br><span class="line">    <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">        popover.sourceView = <span class="keyword">self</span>.activityButton;</span><br><span class="line">        popover.permittedArrowDirections = <span class="built_in">UIPopoverArrowDirectionUp</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    [<span class="keyword">self</span> presentViewController:activity animated:<span class="literal">YES</span> completion:<span class="literal">NULL</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>再次运行代码，点击Button，就可以看到下面的界面啦(完美展示)</p>
+<img src="/images/展示UIActivityViewController.png">
+<p>然后我们就可以选择服务来操作和分享<code>史蒂夫•乔布斯传</code>啦。</p>
+<h1 id="excludedActivityTypes"><a href="#excludedActivityTypes" class="headerlink" title="excludedActivityTypes"></a>excludedActivityTypes</h1><p><code>UIActivityViewController</code>相比于<code>UIDocumentInteractionController</code>优势除了可以添加额外的自定义服务，它还提供了非常好的原生服务的定制化功能。我们可以完全根据自己的需求，控制<code>UIActivityViewController</code>提供的系统服务的显示，比如我不想展示<code>AirDrop</code>这个功能，而这点在<code>UIDocumentInteractionController</code>是做不到的。想做到这一点，就需要使用到<code>UIActivityViewController</code>提供的一个属性:<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@property</span>(nullable, <span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSArray</span>&lt;<span class="built_in">NSString</span> *&gt; *excludedActivityTypes; <span class="comment">// default is nil. activity types listed will not be displayed</span></span><br></pre></td></tr></table></figure></p>
+<p>正如注释中提到的，<code>excludedActivityTypes</code>这个属性包含了所有不想在<code>UIActivityViewController</code>中展示的Item服务。<code>excludedActivityTypes</code>是一个字符串数组，所包含的内容必须是系统提供的<code>UIActivity</code>的<code>activityType</code>字符串，而系统提供的字符串如下：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypePostToFacebook</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypePostToTwitter</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypePostToWeibo</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypeMessage</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypeMail</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypePrint</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypeCopyToPasteboard</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypeAssignToContact</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypeSaveToCameraRoll</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypeAddToReadingList</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypePostToFlickr</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypePostToVimeo</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypePostToTencentWeibo</span>;</span><br><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypeAirDrop</span>;</span><br></pre></td></tr></table></figure><br>如果我们不想展示<code>AirDrop</code>功能，我们把<code>UIActivityTypeAirDrop</code>添加到<code>excludedActivityTypes</code>里面：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">activity.excludedActivityTypes = @[<span class="built_in">UIActivityTypeAirDrop</span>];</span><br></pre></td></tr></table></figure><br>运行程序，点击Button，我们可以看到下面的界面发生的变化。</p>
+<img src="/images/隐藏AirDrop.png">
+<h1 id="自定义UIActivity服务"><a href="#自定义UIActivity服务" class="headerlink" title="自定义UIActivity服务"></a>自定义UIActivity服务</h1><p><code>UIActivityViewController</code>相比于<code>UIDocumentInteractionController</code>的最大优势就是<code>UIActivityViewController</code>所提供的自定义服务，我们可以通过<code>UIActivity</code>在<code>UIActivityViewController</code>上添加我们自定义的服务。</p>
+<blockquote>
+<p>官方文档上对UIActivity有一段解释，”This class must be subclassed before it can be used. The job of an activity object is to act on the data provided to it and to provide some meta information that iOS can display to the user. For more complex services, an activity object can also display a custom user interface and use it to gather additional information from the user.”。其大概意思是，UIActivity必须通过继承来使用，它主要是操作给用户展示的信息，而且还可以操作展示定制化的界面来获取更多地数据信息。</p>
+</blockquote>
+<p>现在我们打算自定义一个叫<code>ZS Custom</code>的服务，所以我们创建一个<code>ZSCustomActivity</code>得类来继承<code>UIActivity</code>，除此之外，我们必须重写下面的几个方法:</p>
+<p>1.activityType<br>    <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (nullable <span class="built_in">NSString</span> *)activityType;       <span class="comment">// default returns nil. subclass may override to return custom activity type that is reported to completion handler</span></span><br></pre></td></tr></table></figure><br>    这是用来标识自定义服务的一个字符串,而系统提供的服务的标识在上面我们已经提到了；为了迎合iOS SDK中的规范，我给它返回一个<code>UIActivityTypeZSCustomMine</code>，定义如下：<br>    <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span> *<span class="keyword">const</span> <span class="built_in">UIActivityTypeZSCustomMine</span> = <span class="string">@"ZSCustomActivityMine"</span>;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)activityType</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">UIActivityTypeZSCustomMine</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2.activityTitle<br>    <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (nullable <span class="built_in">NSString</span> *)activityTitle;      <span class="comment">// default returns nil. subclass must override and must return non-nil value</span></span><br></pre></td></tr></table></figure></p>
+<pre><code>在`UIActivityViewController`中给用户展示的服务的名称，比如上面图片中的`&quot;Copy&quot;`,`&quot;Print&quot;`,我们自定义的服务名称为`ZS Custom`：
+
+{% codeblock lang:objc %}
+    - (NSString *)activityTitle
+    {
+        //国际化
+        return NSLocalizedString(@"ZS Custom", @"");
+    }
+    {% endcodeblock %}
+</code></pre><p>3.activityImage<br>    <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (nullable <span class="built_in">UIImage</span> *)activityImage;       <span class="comment">// default returns nil. subclass must override and must return non-nil value</span></span><br></pre></td></tr></table></figure></p>
+<pre><code>在`UIActivityViewController`中给用户展示的服务的图标。关于这里的图标，有非常严格的限制：
+
+* 首先是图标的背景色，这里推荐最好的完全透明的背景色。
+
+&gt;官方文档中是这么解释的，&quot;The alpha channel of the image is used as a mask to generate the final image that is presented to the user. Any color data in the image itself is ignored. Opaque pixels have a gradient applied to them and this gradient is then laid on top of a standard background. Thus, a completely opaque image would yield a gradient filled rectangle&quot;,意思大概是，在这里颜色数据会被忽略，而透明图层会被当做mask(蒙版图层)，不透明的图片会显示成渐进色填充。
+
+* 其次是图标的尺寸，在不同的设备需要不同的尺寸，因此需要准备一套图标。
+</code></pre><table>
+<thead>
+<tr>
+<th style="text-align:left">Device</th>
+<th style="text-align:center">iOS Version</th>
+<th style="text-align:center">Icon Size(pt)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">iPhone、iPod Touch</td>
+<td style="text-align:center">iOS 6</td>
+<td style="text-align:center">&lt; 43x43</td>
+</tr>
+<tr>
+<td style="text-align:left">iPhone、iPod Touch</td>
+<td style="text-align:center">iOS 7+</td>
+<td style="text-align:center">60x60</td>
+</tr>
+<tr>
+<td style="text-align:left">iPad</td>
+<td style="text-align:center">iOS 6</td>
+<td style="text-align:center">&lt; 60x60</td>
+</tr>
+<tr>
+<td style="text-align:left">iPad</td>
+<td style="text-align:center">iOS 7+</td>
+<td style="text-align:center">76x76</td>
+</tr>
+<tr>
+<td style="text-align:left">Retina</td>
+<td style="text-align:center">All</td>
+<td style="text-align:center">@2x</td>
+</tr>
+</tbody>
+</table>
+<p>4.canPerformWithActivityItems:<br>    <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)canPerformWithActivityItems:(<span class="built_in">NSArray</span> *)activityItems;   <span class="comment">// override this to return availability of activity based on items. default returns NO</span></span><br><span class="line"></span><br></pre></td></tr></table></figure><br>     指定可以处理的数据类型，如果可以处理则返回<code>YES</code></p>
+<p>5.prepareWithActivityItems:<br>    <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)prepareWithActivityItems:(<span class="built_in">NSArray</span> *)activityItems;      <span class="comment">// override to extract items and set up your HI. default does nothing</span></span><br></pre></td></tr></table></figure><br>    在用户选择展示在<code>UIActivityViewController</code>中的自定义服务的图标之后，调用自定义服务处理方法之前的准备工作，都需要在这个方法中指定，比如可以根据数据展示一个界面来获取用户指定的额外数据信息</p>
+<p>6.activityCategory</p>
+<pre><code>{% codeblock lang:objc %}
+    + (UIActivityCategory)activityCategory NS_AVAILABLE_IOS(7_0); //       default is UIActivityCategoryAction.
+    {% endcodeblock %}
+</code></pre><p>  <code>UIActivityViewController</code>中的服务分为了俩种，<code>UIActivityCategoryAction</code>和<code>UIActivityCategoryShare,``UIActivityCategoryAction</code>表示在最下面一栏的操作型服务,比如<code>Copy</code>、<code>Print</code>;<code>UIActivityCategoryShare</code>表示在中间一栏的分享型服务，比如一些社交软件。</p>
+<p>7.performActivity<br>    <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)performActivity; <span class="comment">// if no view controller, this method is called. call activityDidFinish when done. default calls [self activityDidFinish:NO]</span></span><br></pre></td></tr></table></figure><br>     在用户选择展示在<code>UIActivityViewController</code>中的自定义服务的图标之后，而且也调用了<code>prepareWithActivityItems:</code>,就会调用这个方法执行具体的服务操作</p>
+<p>需要的方法都重写好之后，运行程序，点击Button，就可以看到我们自定义的服务图标显示在了<code>UIActivityViewController</code>中。</p>
+<img src="/images/自定义UIActivity.png">
+<h1 id="补充之AirDrop"><a href="#补充之AirDrop" class="headerlink" title="补充之AirDrop"></a>补充之AirDrop</h1><p>前面一直提到<code>AirDrop</code>,我们在这里额外补充一下<code>AirDrop</code>的相关知识点。<code>AirDrop</code>是在<code>iOS 7</code>中提供的，实现跨设备传输文档的功能。<code>AirDrop</code>的实现基于蓝牙创建一种类似WIFI的”点对点网络“，然后实现跨设备传输功能。</p>
+<p>只是<code>AirDrop</code>的传输是有限制的，我们可以在我们的App中通过<code>AirDrop</code>传送内容，却不能实现通过<code>AirDrop</code>接收内容，因为，苹果把设备上通过<code>AirDrop</code>接收到的内容都放到了自家App上，比如仅仅传送文字时，在接收设备上就会通过<code>Notes</code>打开；如果传送图片，在接收设备上就会保存到<code>Photos</code>应用中；通过URL传送文件，在接收设备上就会通过<code>Safari</code>打开。</p>
+<p>只要是有<code>UIDocumentInteractionController</code>和<code>UIActivityViewController</code>展示的地方，都可以展示<code>AirDrop</code>功能。关于<code>AirDrop</code>如何连接设备，如何传送，可以到百度经验找完美得教程。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/source/categories/iOS/">iOS</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/source/tags/UTI/">UTI</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://serazheng.github.io/2015-12-15-通过UIActivityViewController实现更多分享服务/" data-title="通过UIActivityViewController实现更多分享服务 | 郑少博的技术博客" data-tsina="5738250598" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015-12-31-末班车上一个程序猿的年度总结/" title="末班车上一个程序猿的年度总结">
+  <strong>上一篇：</strong><br/>
+  <span>
+  末班车上一个程序猿的年度总结</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015-12-05-通过UIDocumentInteractionController预览和分享/"  title="通过UIDocumentInteractionController预览和分享">
+ <strong>下一篇：</strong><br/> 
+ <span>通过UIDocumentInteractionController预览和分享
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#简介"><span class="toc-number">2.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#准备"><span class="toc-number">3.</span> <span class="toc-text">准备</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#初始化"><span class="toc-number">4.</span> <span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#视图展示"><span class="toc-number">5.</span> <span class="toc-text">视图展示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#excludedActivityTypes"><span class="toc-number">6.</span> <span class="toc-text">excludedActivityTypes</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义UIActivity服务"><span class="toc-number">7.</span> <span class="toc-text">自定义UIActivity服务</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#补充之AirDrop"><span class="toc-number">8.</span> <span class="toc-text">补充之AirDrop</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="serazheng" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/source/categories/Objective-C/" title="Objective-C">Objective-C<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Swift/" title="Swift">Swift<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Xcode/" title="Xcode">Xcode<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/iOS/" title="iOS">iOS<sup>14</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/开发心得/" title="开发心得">开发心得<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/设计/" title="设计">设计<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/source/tags/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UTI/" title="UTI">UTI<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/APNS/" title="APNS">APNS<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UIKit/" title="UIKit">UIKit<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/OC基础/" title="OC基础">OC基础<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/设计/" title="设计">设计<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/注释/" title="注释">注释<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/内存管理/" title="内存管理">内存管理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/CoreAnimation/" title="CoreAnimation">CoreAnimation<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/ShareExtension/" title="ShareExtension">ShareExtension<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/架构/" title="架构">架构<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/开篇博客/" title="开篇博客">开篇博客<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/TestFlight/" title="TestFlight">TestFlight<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/GitHub开源/" title="GitHub开源">GitHub开源<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/年度总结/" title="年度总结">年度总结<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/Swift/" title="Swift">Swift<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.jianshu.com/users/a0be12563346/latest_articles" target="_blank" title="简书">简书</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://segmentfault.com/u/shaobo" target="_blank" title="SegmentFault">SegmentFault</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://toutiao.io/u/169245" target="_blank" title="开发者头条">开发者头条</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stackoverflow.com/users/5741944/serazheng" target="_blank" title="Stack OverFlow">Stack OverFlow</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://weibo.com/shaobozheng" target="_blank" title="新浪微博">新浪微博</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5738250598&verifier=469942b8&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Sera Zheng in HiJobs. <br/>
+			This is my personal blog</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/5738250598" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/serazheng" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		<a href="http://stackoverflow.com/users/5741944" target="_blank" class="icon-stack-overflow" title="stackoverflow"></a>
+		
+		
+		<a href="https://twitter.com/serazheng" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		<a href="https://www.linkedin.com/in/少博-郑-9a369910b" target="_blank" class="icon-linkedin" title="linkedin"></a>
+		
+		
+		
+		
+		
+		<a href="mailto:SeraZheng@163.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="/about" target="_blank" title="SeraZheng">SeraZheng</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'SeraZheng';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

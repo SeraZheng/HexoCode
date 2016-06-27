@@ -1,0 +1,663 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>浅析Swift给开发者带来的变化 | 郑少博的技术博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="SeraZheng">
+    
+
+    
+    <meta name="description" content="简单项目的动画解析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅析Swift给开发者带来的变化">
+<meta property="og:url" content="http://serazheng.github.io/2016-04-05-浅析Swift给开发者带来的变化/index.html">
+<meta property="og:site_name" content="郑少博的技术博客">
+<meta property="og:description" content="简单项目的动画解析">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1216322-671035ef203e76c4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2016-06-27T08:50:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅析Swift给开发者带来的变化">
+<meta name="twitter:description" content="简单项目的动画解析">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1216322-671035ef203e76c4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta name="twitter:creator" content="@serazheng">
+
+    
+    <link rel="alternative" href="/atom.xml" title="郑少博的技术博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="郑少博的技术博客" title="郑少博的技术博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="郑少博的技术博客">郑少博的技术博客</a></h1>
+				<h2 class="blog-motto">态度决定一切，生命在于奋斗！热爱生活，热爱生命！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:serazheng.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016-04-05-浅析Swift给开发者带来的变化/" title="浅析Swift给开发者带来的变化" itemprop="url">浅析Swift给开发者带来的变化</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
+		
+  <p class="article-time">
+    <time datetime="2016-04-04T16:00:00.000Z" itemprop="datePublished"> Published 2016-04-05</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#兼容Objective-C"><span class="toc-number">2.</span> <span class="toc-text">兼容Objective-C</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#特性"><span class="toc-number">3.</span> <span class="toc-text">特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#跨平台"><span class="toc-number">4.</span> <span class="toc-text">跨平台</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编程范式"><span class="toc-number">5.</span> <span class="toc-text">编程范式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Swift发展"><span class="toc-number">6.</span> <span class="toc-text">Swift发展</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Swift未来"><span class="toc-number">7.</span> <span class="toc-text">Swift未来</span></a></li></ol>
+		
+		</div>
+		
+		<blockquote>
+<p>细数之下，已经有三个月没有写博客做记录了，深深地对自己表示愧疚，之前定下的写作计划，打算将iOS SDK中的framework由浅及深地学习并记录，却由于春节后这次换新东家，一一搁浅了。然而，这次换工作，却也给我带来了意外之喜，那就是我在企业项目开发中，真正地开始使用Swift这门语言。自我感觉，Swift会将我带向一个新的世界。<br><a id="more"></a></p>
+</blockquote>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Swift，作为苹果设计的开发语言，自2014年WWDC会议上发布之日起，就以安全、灵活、高效定位，吸引了一大批的开发者去学习它的语法、模式和设计理念。尤其是在2015年12月4日，苹果将Swift源码开放给开发者，掀起了又一波的学习热潮。本人成为一枚iOS开发程序猿大概有俩年时间了，作为后知后觉的笨鸟，对Swift也是久慕不已，然而却没有投入更多的时间和精力去学习和了解，而每当在一些博客和论坛中，看到大家发表一些对Swift的褒贬建议、学习心得时，内心也是激动不已。换了新的工作之后，一开始也是在熟悉公司和产品，而新的项目中，底层是基于Swift语音开发的，从而给我创造了一个更深层次了解Swift的契机。这篇文章不会介绍一些Swift的语法糖，而是从设计理念和模式上阐述一下我这几个月学习的心得体会。</p>
+<h1 id="兼容Objective-C"><a href="#兼容Objective-C" class="headerlink" title="兼容Objective-C"></a>兼容Objective-C</h1><p>Swift可以兼容Objective-C语言，在我看来，这是它可以迅速传播起来的一个主要原因。开发者不需要重新创建新项目，旧项目中的组件、第三方库依然可以使用。而苹果为Swift优化了编译器，这使得Swift和OC混编更容易。基本的混编规则就是：</p>
+<ol>
+<li>Objective-C项目中的.m文件中需要引入Swift类或函数时，只需要在头文件中引入“YourProjectName-swift.h”，这个文件不需要自己手动添加，是编译器自动创建的；</li>
+<li>Swift项目中的.swift文件中需要引入OC类时，需要创建一个桥接文件，这个文件名称也是可以改变的，只需要在Xcode settings中，添加一下。</li>
+</ol>
+<p><img src="http://upload-images.jianshu.io/upload_images/1216322-671035ef203e76c4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Xcode 设置.png"></p>
+<h1 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h1><p>Swift是一门安全、灵活、高效的编程语言。之所以这么说，是因为在苹果设计Swift之初，就以打造易学、易用并且跨越各种编程风险为目的。举个例子，Swift语言对于访问权限的控制是非常简单和严格的，而且Swift语言对于初始化构造过程控制的十分严格，简单来说初始化原则就是：</p>
+<ol>
+<li>初始化路径必须保证对象完全初始化，这可以通过调用本类型的 designated 初始化方法来得到保证；</li>
+<li>子类的 designated 初始化方法必须调用父类的 designated 方法，以保证父类也完成初始化。</li>
+<li>对于某些我们希望子类中一定实现的 designated 初始化方法，我们可以通过添加 required 关键字进行限制，强制子类对这个方法重写实现。</li>
+</ol>
+<h1 id="跨平台"><a href="#跨平台" class="headerlink" title="跨平台"></a>跨平台</h1><p>Swift语言另一个强大之处是，自Swift2.0之后，它可以在Linux上编译，这让使用Swift编写Server和Android平台应用成为了更大的可能，目前在Linux上开发和学习Swift的趋势已经愈演愈烈。Swift底层使用的是C++编程语言，使得Swift将来的跨平台开发，变成了一种趋势。之前Google之前对外宣布，将会使用Swift开发Android平台的一些组件，而Facebook这些大公司也纷纷加入到此行列之中。</p>
+<h1 id="编程范式"><a href="#编程范式" class="headerlink" title="编程范式"></a>编程范式</h1><p>Swift是一门多范式的编程语言，面向协议，面向对象，函数式编程都在Swift设计理念中体现的非常明显。我在文章开头说了一句，“Swift会将我带向一个新的世界”，也是由此而来。作为一个标准的科班出身的<code>软件工程</code>专业学生，自接触编程起，就接触了C语言的面向过程开发、Java语言的面向对象开发。随着学习的不断深入以及在项目中的逐渐成长，慢慢理解了AOP(面向切片编程)和面向接口编程。总的来说，这些编程思想都是特点鲜明独特，各领风骚。而在接触到融合了多范式编程的Swift之后，我也是被苹果架构师们的强悍震慑到了。</p>
+<blockquote>
+<p>之前一段时间，微博上掀起了对于 <code>函数式编程</code>的热议，有褒有贬，更有甚者，从技术交流转成了人身攻击，个人对此是厌恶不已，由此更是暂停了半个月的微博。虽然厌恶此种氛围，但由此也可以看出国内开发者对于各种编程思想的独到见解。</p>
+</blockquote>
+<h1 id="Swift发展"><a href="#Swift发展" class="headerlink" title="Swift发展"></a>Swift发展</h1><p>自苹果发布Swift编程语言，尤其是在开源之后，各大学习网站如雨后春笋般踊跃出来，而一些iOS大牛们更是或独立，或联合企业开始创办<code>Swfit开发者大会</code>,<code>Swift线下交流</code>,<code>Swfit学习网站</code>。而一些具有代表性的技术网站，都为Swift滑立了独立的版块，如<a href="http://www.cocoachina.com/cms/tags.php?/Swift/" target="_blank" rel="external">Cocoa China</a>、<a href="https://www.raywenderlich.com/category/swift" target="_blank" rel="external">Raywenderlich</a>。一些国内的开发者，纷纷协作交流，通过GitHub，博客网站的形式翻译Swift语言的技术文章。用一句话概括就是，国内企业和开发者对Swift语言是热情高涨的。</p>
+<h1 id="Swift未来"><a href="#Swift未来" class="headerlink" title="Swift未来"></a>Swift未来</h1><p>每一门编程语言都会有一个从推出到趋之完善的过程。Swift和Xcode的问题虽然饱受诟病,然而，个人相信，随着时间的推移和语言自身的成长，Swift的将来必定会成为主流开发语言之一。自苹果推出Swift之后，每一次苹果发布会，都会推出Swfit的新版本。而即将到来的2016年WWDC，也是备受瞩目。不仅仅是对iOS 10的预见，更是对Swift 3.0的期待。据说，Swift3.0将会是变化最动荡的一次升级，以后的版本升级都会基于Swift3.0，这也是符合苹果大刀阔斧和快中求稳的风格。而且，随着Swift对各大平台兼容性越来越强，相信会有更多的企业和开发者投入到Swfit中去。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/source/categories/Swift/">Swift</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/source/tags/Swift/">Swift</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://serazheng.github.io/2016-04-05-浅析Swift给开发者带来的变化/" data-title="浅析Swift给开发者带来的变化 | 郑少博的技术博客" data-tsina="5738250598" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016-06-27-Swift使用Share Extension实现更多的内容分享/" title="Swift使用Share Extension实现更多的内容分享">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Swift使用Share Extension实现更多的内容分享</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016-01-13-UIViewController解耦---浅析Three20架构/"  title="UIViewController解耦---浅析Three20架构">
+ <strong>下一篇：</strong><br/> 
+ <span>UIViewController解耦---浅析Three20架构
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#兼容Objective-C"><span class="toc-number">2.</span> <span class="toc-text">兼容Objective-C</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#特性"><span class="toc-number">3.</span> <span class="toc-text">特性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#跨平台"><span class="toc-number">4.</span> <span class="toc-text">跨平台</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编程范式"><span class="toc-number">5.</span> <span class="toc-text">编程范式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Swift发展"><span class="toc-number">6.</span> <span class="toc-text">Swift发展</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Swift未来"><span class="toc-number">7.</span> <span class="toc-text">Swift未来</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="serazheng" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/source/categories/Objective-C/" title="Objective-C">Objective-C<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Swift/" title="Swift">Swift<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Xcode/" title="Xcode">Xcode<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/iOS/" title="iOS">iOS<sup>14</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/开发心得/" title="开发心得">开发心得<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/设计/" title="设计">设计<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/source/tags/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UTI/" title="UTI">UTI<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/APNS/" title="APNS">APNS<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UIKit/" title="UIKit">UIKit<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/OC基础/" title="OC基础">OC基础<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/设计/" title="设计">设计<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/注释/" title="注释">注释<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/内存管理/" title="内存管理">内存管理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/CoreAnimation/" title="CoreAnimation">CoreAnimation<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/ShareExtension/" title="ShareExtension">ShareExtension<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/架构/" title="架构">架构<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/开篇博客/" title="开篇博客">开篇博客<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/TestFlight/" title="TestFlight">TestFlight<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/GitHub开源/" title="GitHub开源">GitHub开源<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/年度总结/" title="年度总结">年度总结<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/Swift/" title="Swift">Swift<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.jianshu.com/users/a0be12563346/latest_articles" target="_blank" title="简书">简书</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://segmentfault.com/u/shaobo" target="_blank" title="SegmentFault">SegmentFault</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://toutiao.io/u/169245" target="_blank" title="开发者头条">开发者头条</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stackoverflow.com/users/5741944/serazheng" target="_blank" title="Stack OverFlow">Stack OverFlow</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://weibo.com/shaobozheng" target="_blank" title="新浪微博">新浪微博</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5738250598&verifier=469942b8&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Sera Zheng in HiJobs. <br/>
+			This is my personal blog</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/5738250598" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/serazheng" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		<a href="http://stackoverflow.com/users/5741944" target="_blank" class="icon-stack-overflow" title="stackoverflow"></a>
+		
+		
+		<a href="https://twitter.com/serazheng" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		<a href="https://www.linkedin.com/in/少博-郑-9a369910b" target="_blank" class="icon-linkedin" title="linkedin"></a>
+		
+		
+		
+		
+		
+		<a href="mailto:SeraZheng@163.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="/about" target="_blank" title="SeraZheng">SeraZheng</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'SeraZheng';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

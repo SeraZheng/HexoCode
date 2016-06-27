@@ -1,0 +1,649 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>使用注释提高iOS开发效率 | 郑少博的技术博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="SeraZheng">
+    
+
+    
+    <meta name="description" content="前言　　新手在开始参与一个开发项目的时候，会把大部分的时间耗费在阅读项目的需求文档、开发文档和代码，一篇好的需求文档和开发文档会帮助新手很快的理解项目的目标和进度，而新手对于代码的阅读会先从代码的注释开始。拥有良好注释的代码可以省去团队其他的开发者好多时间，不至于让其他参与者去一行一行的阅读代码，去不断地加断点查看代码地跳转逻辑，接下来我们就谈谈iOS开发中使用的一些注释。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用注释提高iOS开发效率">
+<meta property="og:url" content="http://serazheng.github.io/2015-07-25-使用注释提高iOS开发效率/index.html">
+<meta property="og:site_name" content="郑少博的技术博客">
+<meta property="og:description" content="前言　　新手在开始参与一个开发项目的时候，会把大部分的时间耗费在阅读项目的需求文档、开发文档和代码，一篇好的需求文档和开发文档会帮助新手很快的理解项目的目标和进度，而新手对于代码的阅读会先从代码的注释开始。拥有良好注释的代码可以省去团队其他的开发者好多时间，不至于让其他参与者去一行一行的阅读代码，去不断地加断点查看代码地跳转逻辑，接下来我们就谈谈iOS开发中使用的一些注释。">
+<meta property="og:updated_time" content="2016-06-27T08:00:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用注释提高iOS开发效率">
+<meta name="twitter:description" content="前言　　新手在开始参与一个开发项目的时候，会把大部分的时间耗费在阅读项目的需求文档、开发文档和代码，一篇好的需求文档和开发文档会帮助新手很快的理解项目的目标和进度，而新手对于代码的阅读会先从代码的注释开始。拥有良好注释的代码可以省去团队其他的开发者好多时间，不至于让其他参与者去一行一行的阅读代码，去不断地加断点查看代码地跳转逻辑，接下来我们就谈谈iOS开发中使用的一些注释。">
+<meta name="twitter:creator" content="@serazheng">
+
+    
+    <link rel="alternative" href="/atom.xml" title="郑少博的技术博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="郑少博的技术博客" title="郑少博的技术博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="郑少博的技术博客">郑少博的技术博客</a></h1>
+				<h2 class="blog-motto">态度决定一切，生命在于奋斗！热爱生活，热爱生命！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:serazheng.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015-07-25-使用注释提高iOS开发效率/" title="使用注释提高iOS开发效率" itemprop="url">使用注释提高iOS开发效率</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
+		
+  <p class="article-time">
+    <time datetime="2015-07-24T16:00:00.000Z" itemprop="datePublished"> Published 2015-07-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言　　</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pragma-mark"><span class="toc-number">2.</span> <span class="toc-text">#pragma mark</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义标示"><span class="toc-number">3.</span> <span class="toc-text">自定义标示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码注释"><span class="toc-number">4.</span> <span class="toc-text">代码注释</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#方法注释"><span class="toc-number">5.</span> <span class="toc-text">方法注释</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#生成开发文档"><span class="toc-number">6.</span> <span class="toc-text">生成开发文档</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言　　"></a>前言　　</h1><p>新手在开始参与一个开发项目的时候，会把大部分的时间耗费在阅读项目的<code>需求文档</code>、<code>开发文档</code>和<code>代码</code>，一篇好的<code>需求文档</code>和<code>开发文档</code>会帮助新手很快的理解项目的目标和进度，而新手对于代码的阅读会先从代码的注释开始。拥有良好<code>注释</code>的代码可以省去团队其他的开发者好多时间，不至于让其他参与者去一行一行的阅读代码，去不断地加断点查看代码地跳转逻辑，接下来我们就谈谈iOS开发中使用的一些注释。<br><a id="more"></a></p>
+<h1 id="pragma-mark"><a href="#pragma-mark" class="headerlink" title="#pragma mark"></a>#pragma mark</h1><p>确切地说，这是Xcode编译器特定得编译命令，它的作用就是在代码地编辑器中，将顶部的方法函数弹出菜单按层次分开，方便于我们的查找。一般的使用方法是在想要分层的第一个方法或函数上面加上<code>#pragma mark -</code>　和<code>#pragma　mark something</code>(你的分层定义)。此外其他常用到的，是在我们想要标识代码的地方加上<code>#warning</code>，这样运行时编译器会自动帮助我们将代码标识到<code>issue　navigator</code>。</p>
+<h1 id="自定义标示"><a href="#自定义标示" class="headerlink" title="自定义标示"></a>自定义标示</h1><p>使用自定义的特殊标识符，例如<code>//TODO:</code>或者是<code>//FIXME:</code>。使用这一类的特殊标识符，首先需要在<code>Xcode</code>中添加支持，在我们的<code>Target</code>中，选择<code>Build Phases</code>，Xcode 6将<code>Build Phases</code>从<code>Build Settings</code>分离了出来。在<code>Build Phases</code>选择<code>New Run Script Phase</code>，然后输入：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">KEYWORDS=<span class="string">"TODO:|FIXME:"</span></span><br><span class="line">find <span class="string">"<span class="variable">$&#123;SRCROOT&#125;</span>"</span>  −name<span class="string">"∗.h"</span>−or−name<span class="string">"∗."</span>        -print0 | xargs -0 egrep --with-filename --line-number --only-matching <span class="string">"(<span class="variable">$KEYWORDS</span>).*\$"</span> | perl -p <span class="_">-e</span> <span class="string">"s/(<span class="variable">$KEYWORDS</span>)/ warning: \$1/"</span></span><br></pre></td></tr></table></figure><br> 　<br>由于本人对脚本语言不熟悉，想要深入研究的朋友们可以从网上搜索教程。在添加了上面的支持后，你就可以在代码中通过使用自定义的标识符来快速查找代码。</p>
+<h1 id="代码注释"><a href="#代码注释" class="headerlink" title="代码注释"></a>代码注释</h1><p>上面的俩种可以算是编译器识别的命令，下面我们来说一下传统意义上的代码注释。不管在使用哪种语言，我们一般都会使用到代码注释，而不同的语言有不同的注释规范，例如一般的单行注释，我们会使用<code>“//”</code>，而多行注释则会使用<code>&quot;/*......*/&quot;</code>，而对于iOS开发者来说，代码注释也拥有属于它自己的一套规范。下面就是一些常用的iOS的代码注释，这些衍生的注释目的是方便文档生成：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">   </span><br><span class="line"><span class="comment">/// Single line comment.（单行文本）</span></span><br><span class="line"><span class="comment">/// Single line comment spreading （多行文本）</span></span><br><span class="line">     <span class="comment">/// over multiple lines.</span></span><br><span class="line"><span class="comment">/** Single line comment. */</span> （单行文本）</span><br><span class="line"><span class="comment">/** Single line comment spreading （多行文本）</span><br><span class="line">       * over multiple lines.</span><br><span class="line">       */</span></span><br><span class="line"><span class="comment">/** Single line comment spreading （多行文本）</span><br><span class="line">       over multiple lines. No star.</span><br><span class="line">       */</span></span><br><span class="line"><span class="comment">/*! Single line comment. */</span> （单行文本）</span><br><span class="line"><span class="comment">/*! Single line comment spreading （多行文本）</span><br><span class="line">       over multiple lines.</span><br><span class="line">       */</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="方法注释"><a href="#方法注释" class="headerlink" title="方法注释"></a>方法注释</h1><p>在iOS开发代码中有一种对方法的注释 ，其中包含了特有的指令：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line">  * @brief 带字符串参数的方法.（具体描述）</span><br><span class="line">  * @param  value 值.（参数描述）</span><br><span class="line">  * @return 返回value.（返回值描述）</span><br><span class="line">  * @exception NSException 可能抛出的异常.（抛出异常描述）</span><br><span class="line">  * @see someMethod （关联描述）</span><br><span class="line">  * @warning 警告: appledoc中显示为蓝色背景, Doxygen中显示为红色竖条.（警告描述）</span><br><span class="line">  * @bug 缺陷: appledoc中显示为黄色背景, Doxygen中显示为绿色竖条.（缺陷描述）</span><br><span class="line">  */</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="生成开发文档"><a href="#生成开发文档" class="headerlink" title="生成开发文档"></a>生成开发文档</h1><p>说起上面的这种iOS开发中的代码注释，就不得不说一下iOS开发中的文档生成，一个良好的代码文档可以帮助其他开发者很好的了解代码结构和具体内容。而时下比较流行的几个文档生成工具有下面几种，关于iOS代码文档的具体生成，我推荐朋友们观看这篇 <a href="http://blog.devtang.com/blog/2012/02/01/use-appledoc-to-generate-xcode-doc/" target="_blank" rel="external">唐巧的技术博客——-使用Objective-C的文档生成工具</a>。</p>
+<ol>
+<li>第三方工具<a href="http://www.stack.nl/~dimitri/doxygen/index.html" target="_blank" rel="external">Doxygen</a></li>
+<li>Xcode自带的<a href="http://developer.apple.com/opensource/tools/headerdoc.html" target="_blank" rel="external">HeaderDoc</a></li>
+<li>默认与苹果官方文档风格类似的<a href="http://gentlebytes.com/appledoc/" target="_blank" rel="external">AppleDoc</a></li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/source/categories/Xcode/">Xcode</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/source/tags/注释/">注释</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://serazheng.github.io/2015-07-25-使用注释提高iOS开发效率/" data-title="使用注释提高iOS开发效率 | 郑少博的技术博客" data-tsina="5738250598" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015-07-26-自动注释VVDocumenter-Xcode和插件管理Alcatraz/" title="自动注释VVDocumenter-Xcode和插件管理Alcatraz">
+  <strong>上一篇：</strong><br/>
+  <span>
+  自动注释VVDocumenter-Xcode和插件管理Alcatraz</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015-07-15-Apple推送通知(四)silent APNS/"  title="Apple推送通知(四)silent APNS">
+ <strong>下一篇：</strong><br/> 
+ <span>Apple推送通知(四)silent APNS
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言　　</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pragma-mark"><span class="toc-number">2.</span> <span class="toc-text">#pragma mark</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义标示"><span class="toc-number">3.</span> <span class="toc-text">自定义标示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#代码注释"><span class="toc-number">4.</span> <span class="toc-text">代码注释</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#方法注释"><span class="toc-number">5.</span> <span class="toc-text">方法注释</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#生成开发文档"><span class="toc-number">6.</span> <span class="toc-text">生成开发文档</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="serazheng" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/source/categories/Objective-C/" title="Objective-C">Objective-C<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Swift/" title="Swift">Swift<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Xcode/" title="Xcode">Xcode<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/iOS/" title="iOS">iOS<sup>14</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/开发心得/" title="开发心得">开发心得<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/设计/" title="设计">设计<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/source/tags/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UTI/" title="UTI">UTI<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/APNS/" title="APNS">APNS<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UIKit/" title="UIKit">UIKit<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/OC基础/" title="OC基础">OC基础<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/设计/" title="设计">设计<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/注释/" title="注释">注释<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/内存管理/" title="内存管理">内存管理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/CoreAnimation/" title="CoreAnimation">CoreAnimation<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/ShareExtension/" title="ShareExtension">ShareExtension<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/架构/" title="架构">架构<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/开篇博客/" title="开篇博客">开篇博客<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/TestFlight/" title="TestFlight">TestFlight<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/GitHub开源/" title="GitHub开源">GitHub开源<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/年度总结/" title="年度总结">年度总结<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/Swift/" title="Swift">Swift<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.jianshu.com/users/a0be12563346/latest_articles" target="_blank" title="简书">简书</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://segmentfault.com/u/shaobo" target="_blank" title="SegmentFault">SegmentFault</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://toutiao.io/u/169245" target="_blank" title="开发者头条">开发者头条</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stackoverflow.com/users/5741944/serazheng" target="_blank" title="Stack OverFlow">Stack OverFlow</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://weibo.com/shaobozheng" target="_blank" title="新浪微博">新浪微博</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5738250598&verifier=469942b8&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Sera Zheng in HiJobs. <br/>
+			This is my personal blog</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/5738250598" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/serazheng" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		<a href="http://stackoverflow.com/users/5741944" target="_blank" class="icon-stack-overflow" title="stackoverflow"></a>
+		
+		
+		<a href="https://twitter.com/serazheng" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		<a href="https://www.linkedin.com/in/少博-郑-9a369910b" target="_blank" class="icon-linkedin" title="linkedin"></a>
+		
+		
+		
+		
+		
+		<a href="mailto:SeraZheng@163.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="/about" target="_blank" title="SeraZheng">SeraZheng</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'SeraZheng';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

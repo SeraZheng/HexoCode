@@ -1,0 +1,651 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造 | 郑少博的技术博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="SeraZheng">
+    
+
+    
+    <meta name="description" content="简单项目的动画解析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造">
+<meta property="og:url" content="http://serazheng.github.io/2015-11-05-ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造/index.html">
+<meta property="og:site_name" content="郑少博的技术博客">
+<meta property="og:description" content="简单项目的动画解析">
+<meta property="og:image" content="http://serazheng.github.io/images/Animation_Title.gif">
+<meta property="og:updated_time" content="2016-06-27T08:00:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造">
+<meta name="twitter:description" content="简单项目的动画解析">
+<meta name="twitter:image" content="http://serazheng.github.io/images/Animation_Title.gif">
+<meta name="twitter:creator" content="@serazheng">
+
+    
+    <link rel="alternative" href="/atom.xml" title="郑少博的技术博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="郑少博的技术博客" title="郑少博的技术博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="郑少博的技术博客">郑少博的技术博客</a></h1>
+				<h2 class="blog-motto">态度决定一切，生命在于奋斗！热爱生活，热爱生命！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:serazheng.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015-11-05-ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造/" title="ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造" itemprop="url">ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
+		
+  <p class="article-time">
+    <time datetime="2015-11-04T16:00:00.000Z" itemprop="datePublished"> Published 2015-11-05</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#设计思路"><span class="toc-number">2.</span> <span class="toc-text">设计思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#动画"><span class="toc-number">3.</span> <span class="toc-text">动画</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-UIView"><span class="toc-number">3.1.</span> <span class="toc-text">1.UIView</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-CoreAnimation"><span class="toc-number">3.2.</span> <span class="toc-text">2.CoreAnimation</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#贝塞尔曲线"><span class="toc-number">4.</span> <span class="toc-text">贝塞尔曲线</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#反馈"><span class="toc-number">5.</span> <span class="toc-text">反馈</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前学习了一些绘图的方式和动画的制作，于是简单地制作了一个下拉列表，我把它定位于navigationBar的titleView主要是因为基于新浪微博的Groups分组，新创的一种类似于UIActionSheet的展现方式，至于用法方面，在GitHub上可以完全看到：<a href="https://github.com/SeraZheng/ZSNavigationFilterMenuView" target="_blank" rel="external">SeraZheng的ZSNavigationFilterMenuView</a>。<br><a id="more"></a><br>这篇文章，主要是想写一些我在制作过程中用到的一些知识，还有一些想法和感受。先上图，下面是一个没有使用icon的简单效果，具体效果可以去GitHub看。<br><img src="/images/Animation_Title.gif"></p>
+<h1 id="设计思路"><a href="#设计思路" class="headerlink" title="设计思路"></a>设计思路</h1><p>首先，我自定义的ZSNavigationFilterMenuView是继承自UIButton的，这样我可以直接设置title和icon，免去了大部分的工作，所以在使用我自定义的ZSNavigationFilterMenuView的时候，一些UIButton的属性及方法都可以直接使用，很方便根据自己不同的需求定制个性化内容。</p>
+<p>我使用了tableView作为主要的展示，这样有利于我定制自己的内容，同时也很方便后期的扩展。上图中的图标，都是我使用CoreGraphics画出来，以达到一些练手的目的，但是在真正的开发中，还是要直接使用现成的图片，这样可以提升很大的性能。而关于我选择的展示动画，主要是没有什么设计上的灵感，在Dribble和Capptivate上搜着一些相关内容，并没有很大的启发，因此这里暂时决定了俩种简单动画。</p>
+<h1 id="动画"><a href="#动画" class="headerlink" title="动画"></a>动画</h1><h2 id="1-UIView"><a href="#1-UIView" class="headerlink" title="1.UIView"></a>1.UIView</h2><p>其他的内容都是一些简单的内容，这里主要讲一下，我制作动画时使用到的一些知识。Apple在SDK中为我们封装好了一些直接使用的API，可以达到我们想要的简单动画的效果。其中我们可以直接使用UIView的动画，主要有三种方式。</p>
+<p>第一种最基础的方式就是使用UIView 的扩展UIViewAnimation提供的方法：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">UIView</span> beginAnimations:<span class="string">@"_bodyView"</span> context:<span class="literal">nil</span>];</span><br><span class="line"></span><br><span class="line">[<span class="built_in">UIView</span> setAnimationDuration:<span class="number">0.5</span>]; <span class="comment">//设置动画延时</span></span><br><span class="line"></span><br><span class="line">[<span class="built_in">UIView</span> setAnimationRepeatCount:<span class="number">1</span>]; <span class="comment">//设置动画重复次数</span></span><br><span class="line"></span><br><span class="line">[<span class="built_in">UIView</span> setAnimationCurve:<span class="built_in">UIViewAnimationCurveLinear</span>]; <span class="comment">//设置动画曲线</span></span><br><span class="line"></span><br><span class="line">[<span class="built_in">UIView</span> setAnimationDelay:<span class="number">0.</span>f]; <span class="comment">//设置动画延迟</span></span><br><span class="line"></span><br><span class="line">[<span class="built_in">UIView</span> setAnimationRepeatAutoreverses:<span class="literal">YES</span>]; <span class="comment">//设置动画重复时以动画形式从终点回到起点</span></span><br><span class="line"></span><br><span class="line">[_bodyView setBackgroundColor:ZSSTYLEVAR(bodyViewHighlightedColor)];</span><br><span class="line"></span><br><span class="line">[_bodyView.layer setBorderWidth:<span class="number">0.</span>f];</span><br><span class="line"></span><br><span class="line">[<span class="built_in">UIView</span> commitAnimations];</span><br></pre></td></tr></table></figure></p>
+<p>第二种比较简单的使用方式就是使用UIView的扩展UIViewAnimationWithBlocks提供的方法：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">UIView</span> animateWithDuration:<span class="number">0.5</span> delay:<span class="number">0.</span>f options:<span class="built_in">UIViewAnimationOptionAutoreverse</span> animations:^()&#123;</span><br><span class="line"></span><br><span class="line">           [_bodyView setBackgroundColor:ZSSTYLEVAR(bodyViewHighlightedColor)];</span><br><span class="line"></span><br><span class="line">           [_bodyView.layer setBorderWidth:<span class="number">0.</span>f];</span><br><span class="line"></span><br><span class="line">&#125; completion:<span class="literal">NULL</span>];</span><br></pre></td></tr></table></figure></p>
+<p>第三种就是使用UIView的扩展UIViewKeyframeAnimations提供的创建关键帧动画的方法：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">UIView</span> animateKeyframesWithDuration:<span class="number">0.5</span> delay:<span class="number">0.</span>f options:<span class="built_in">UIViewKeyframeAnimationOptionAutoreverse</span> | <span class="built_in">UIViewKeyframeAnimationOptionCalculationModeLinear</span> animations:^()&#123;</span><br><span class="line"></span><br><span class="line">          [_bodyView setBackgroundColor:ZSSTYLEVAR(bodyViewHighlightedColor)];</span><br><span class="line"></span><br><span class="line">          [_bodyView.layer setBorderWidth:<span class="number">0.</span>f];</span><br><span class="line"></span><br><span class="line">&#125; completion:<span class="literal">NULL</span>];</span><br></pre></td></tr></table></figure></p>
+<p>关于上面三种的使用方式是大同小异，个人倾向于简单的动画使用block的方式，因为这不仅减少了我们的代码量，而且可读性也比较好。UIView的扩展UIViewAnimationWithBlocks提供了其他一些让我们可以直接创建动画效果的方法，比如可以直接创建弹簧动画效果，而我在展现tableView时，使用到的也是这种效果。</p>
+<h2 id="2-CoreAnimation"><a href="#2-CoreAnimation" class="headerlink" title="2.CoreAnimation"></a>2.CoreAnimation</h2><p>底层的实现动画的方式，就是利用QuartzCore框架，通过CAAnimation来达到我们想要的动画效果。QuartzCore框架也比较简单，主要提供了关于CALayer,CAAnimation的个性化定制的使用方法。<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">CGPoint</span> viewPosition = <span class="keyword">self</span>.contentView.layer.position;</span><br><span class="line"></span><br><span class="line">_shakeAnimation = [<span class="built_in">CABasicAnimation</span> animationWithKeyPath:<span class="string">@"position"</span>];</span><br><span class="line"></span><br><span class="line">[_shakeAnimation setTimingFunction:[<span class="built_in">CAMediaTimingFunction</span> functionWithName:k<span class="built_in">CAMediaTimingFunctionDefault</span>]]; <span class="comment">//设置动画曲线效果</span></span><br><span class="line"></span><br><span class="line">[_shakeAnimation setFromValue:[<span class="built_in">NSValue</span> valueWith<span class="built_in">CGPoint</span>:<span class="built_in">CGPointMake</span>(viewPosition.x - <span class="number">10</span>, viewPosition.y)]]; <span class="comment">//设置起始值</span></span><br><span class="line"></span><br><span class="line">[_shakeAnimation setToValue:[<span class="built_in">NSValue</span> valueWith<span class="built_in">CGPoint</span>:<span class="built_in">CGPointMake</span>(viewPosition.x + <span class="number">10</span>, viewPosition.y)]]; <span class="comment">//设置终点值</span></span><br><span class="line"></span><br><span class="line">[_shakeAnimation setAutoreverses:<span class="literal">YES</span>]; <span class="comment">//设置以动画方式回到起始值</span></span><br><span class="line"></span><br><span class="line">[_shakeAnimation setRepeatCount:<span class="number">2</span>]; <span class="comment">//设置动画重复次数</span></span><br><span class="line"></span><br><span class="line">[_shakeAnimation setDuration:<span class="number">0.05</span>]; <span class="comment">//设置动画时间</span></span><br><span class="line"></span><br><span class="line">[<span class="keyword">self</span>.contentView.layer addAnimation:_shakeAnimation]; <span class="comment">//添加动画到layer</span></span><br></pre></td></tr></table></figure><br>关于动画基础和动画原理，我推荐一篇非常棒的博客：<a href="http://blog.jobbole.com/69111/" target="_blank" rel="external">objc系列译文（12.1）：动画解释</a>。</p>
+<h1 id="贝塞尔曲线"><a href="#贝塞尔曲线" class="headerlink" title="贝塞尔曲线"></a>贝塞尔曲线</h1><p>谈到动画，不得不说的就是贝塞尔曲线，堪称是制作精美动画效果的基础法则。苹果给我们提供了一个非常好的使用贝塞尔曲线的封装：UIBezierPath。而关于UIBezierPath的基础使用，我推荐一篇比较详细的博客：<a href="http://www.henishuo.com/uibezierpath-draw/" target="_blank" rel="external">标哥的技术博客–UIBezierPath精讲</a>。</p>
+<h1 id="反馈"><a href="#反馈" class="headerlink" title="反馈"></a>反馈</h1><p>关于动画的基础原理甚至是贝塞尔曲线得原理及使用，我们都可以在维基百科上搜到很好的教程。想学习的朋友可以自行查阅。关于项目中的动画的设计效果，暂时没有什么灵感，如果在Dribble和Capptivate上找到了动画效果和灵感，会及时的更新项目和这篇文章，也希望如大家有什么好的动画效果和其他方面的建议，可以多多评论给我！</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/source/categories/iOS/">iOS</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/source/tags/CoreAnimation/">CoreAnimation</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://serazheng.github.io/2015-11-05-ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造/" data-title="ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造 | 郑少博的技术博客" data-tsina="5738250598" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015-11-20-详解苹果提供的UTI(统一类型标识符)/" title="详解苹果提供的UTI(统一类型标识符)">
+  <strong>上一篇：</strong><br/>
+  <span>
+  详解苹果提供的UTI(统一类型标识符)</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015-10-25-使用KVC自定义UISearchBar外观/"  title="使用KVC自定义UISearchBar外观">
+ <strong>下一篇：</strong><br/> 
+ <span>使用KVC自定义UISearchBar外观
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#设计思路"><span class="toc-number">2.</span> <span class="toc-text">设计思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#动画"><span class="toc-number">3.</span> <span class="toc-text">动画</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-UIView"><span class="toc-number">3.1.</span> <span class="toc-text">1.UIView</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-CoreAnimation"><span class="toc-number">3.2.</span> <span class="toc-text">2.CoreAnimation</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#贝塞尔曲线"><span class="toc-number">4.</span> <span class="toc-text">贝塞尔曲线</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#反馈"><span class="toc-number">5.</span> <span class="toc-text">反馈</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="serazheng" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/source/categories/Objective-C/" title="Objective-C">Objective-C<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Swift/" title="Swift">Swift<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Xcode/" title="Xcode">Xcode<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/iOS/" title="iOS">iOS<sup>14</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/开发心得/" title="开发心得">开发心得<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/设计/" title="设计">设计<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/source/tags/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UTI/" title="UTI">UTI<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/APNS/" title="APNS">APNS<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UIKit/" title="UIKit">UIKit<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/OC基础/" title="OC基础">OC基础<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/设计/" title="设计">设计<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/注释/" title="注释">注释<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/内存管理/" title="内存管理">内存管理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/CoreAnimation/" title="CoreAnimation">CoreAnimation<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/ShareExtension/" title="ShareExtension">ShareExtension<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/架构/" title="架构">架构<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/开篇博客/" title="开篇博客">开篇博客<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/TestFlight/" title="TestFlight">TestFlight<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/GitHub开源/" title="GitHub开源">GitHub开源<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/年度总结/" title="年度总结">年度总结<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/Swift/" title="Swift">Swift<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.jianshu.com/users/a0be12563346/latest_articles" target="_blank" title="简书">简书</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://segmentfault.com/u/shaobo" target="_blank" title="SegmentFault">SegmentFault</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://toutiao.io/u/169245" target="_blank" title="开发者头条">开发者头条</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stackoverflow.com/users/5741944/serazheng" target="_blank" title="Stack OverFlow">Stack OverFlow</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://weibo.com/shaobozheng" target="_blank" title="新浪微博">新浪微博</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5738250598&verifier=469942b8&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Sera Zheng in HiJobs. <br/>
+			This is my personal blog</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/5738250598" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/serazheng" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		<a href="http://stackoverflow.com/users/5741944" target="_blank" class="icon-stack-overflow" title="stackoverflow"></a>
+		
+		
+		<a href="https://twitter.com/serazheng" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		<a href="https://www.linkedin.com/in/少博-郑-9a369910b" target="_blank" class="icon-linkedin" title="linkedin"></a>
+		
+		
+		
+		
+		
+		<a href="mailto:SeraZheng@163.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="/about" target="_blank" title="SeraZheng">SeraZheng</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'SeraZheng';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

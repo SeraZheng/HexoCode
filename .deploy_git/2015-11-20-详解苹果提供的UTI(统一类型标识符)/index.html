@@ -1,0 +1,752 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>详解苹果提供的UTI(统一类型标识符) | 郑少博的技术博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="SeraZheng">
+    
+
+    
+    <meta name="description" content="解释UTI的概念和相关内容">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解苹果提供的UTI(统一类型标识符)">
+<meta property="og:url" content="http://serazheng.github.io/2015-11-20-详解苹果提供的UTI(统一类型标识符)/index.html">
+<meta property="og:site_name" content="郑少博的技术博客">
+<meta property="og:description" content="解释UTI的概念和相关内容">
+<meta property="og:image" content="https://developer.apple.com/library/ios/documentation/FileManagement/Conceptual/understanding_utis/art/conformance_hierarchy.gif">
+<meta property="og:image" content="https://developer.apple.com/library/ios/documentation/FileManagement/Conceptual/understanding_utis/art/physical_vs_functional.gif">
+<meta property="og:updated_time" content="2016-06-27T08:00:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="详解苹果提供的UTI(统一类型标识符)">
+<meta name="twitter:description" content="解释UTI的概念和相关内容">
+<meta name="twitter:image" content="https://developer.apple.com/library/ios/documentation/FileManagement/Conceptual/understanding_utis/art/conformance_hierarchy.gif">
+<meta name="twitter:creator" content="@serazheng">
+
+    
+    <link rel="alternative" href="/atom.xml" title="郑少博的技术博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="郑少博的技术博客" title="郑少博的技术博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="郑少博的技术博客">郑少博的技术博客</a></h1>
+				<h2 class="blog-motto">态度决定一切，生命在于奋斗！热爱生活，热爱生命！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:serazheng.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015-11-20-详解苹果提供的UTI(统一类型标识符)/" title="详解苹果提供的UTI(统一类型标识符)" itemprop="url">详解苹果提供的UTI(统一类型标识符)</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
+		
+  <p class="article-time">
+    <time datetime="2015-11-19T16:00:00.000Z" itemprop="datePublished"> Published 2015-11-20</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#官方教程"><span class="toc-number">2.</span> <span class="toc-text">官方教程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#为什么会有UTI"><span class="toc-number">3.</span> <span class="toc-text">为什么会有UTI</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UTI概念"><span class="toc-number">4.</span> <span class="toc-text">UTI概念</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UTI用途"><span class="toc-number">5.</span> <span class="toc-text">UTI用途</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#用法"><span class="toc-number">6.</span> <span class="toc-text">用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-简介"><span class="toc-number">6.0.1.</span> <span class="toc-text">1. 简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-字符集"><span class="toc-number">6.0.2.</span> <span class="toc-text">2. 字符集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-语法"><span class="toc-number">6.0.3.</span> <span class="toc-text">3. 语法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#顺应性"><span class="toc-number">7.</span> <span class="toc-text">顺应性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用UTI"><span class="toc-number">8.</span> <span class="toc-text">使用UTI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-应用场景"><span class="toc-number">8.0.1.</span> <span class="toc-text">1. 应用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-操作方法"><span class="toc-number">8.0.2.</span> <span class="toc-text">2. 操作方法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义UTI"><span class="toc-number">9.</span> <span class="toc-text">自定义UTI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-用法"><span class="toc-number">9.0.1.</span> <span class="toc-text">1. 用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-自定义UTI的建议"><span class="toc-number">9.0.2.</span> <span class="toc-text">2. 自定义UTI的建议</span></a></li></ol></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近项目中有个需求，在iOS设备上使用iOS系统提供的内容分享功能，从第三方App应用直接分享实体内容到我们的应用中。其大概的原理是这样的，首先为我们的iOS应用注册可以打开document types(文档类型)，然后在第三方应用中，如果它们使用了iOS提供的分享功能，那么就会看到我们的应用程序，点击进行分享。</p>
+<p>而关于需求的设计和实现的具体思路，我会在下一篇博客中详细讲解。这篇文章是来讲一下在iOS系统中为了更好的进行类型标识，而提供的一套共用的规范，也就是标题中提到的“Uniform Type Identifier(UTI)”，我把它翻译成“统一类型标识符”,下面统一简称为“UTI”。<br><a id="more"></a></p>
+<h1 id="官方教程"><a href="#官方教程" class="headerlink" title="官方教程"></a>官方教程</h1><p>网上关于UTI的使用教程少之又少，所以我只是参考了苹果官方文档提供的讲解，这篇博客权当是我对于官方文档的一个理解吧！！自认为很重要的部分，我会贴出来官方文档原文，以便于大家学习理解，不至于被我的歪词所误导，同时也推荐大家从开发者中心上搜一些文档来看，这里推荐几篇：</p>
+<p>1.<a href="https://developer.apple.com/library/ios/documentation/General/Conceptual/DevPedia-CocoaCore/UniformTypeIdentifier.html" target="_blank" rel="external">Cocoa Core Competencies – Uniform Type Identifier‍</a></p>
+<p>这篇文档提供了一个视图来说明UTI是什么，怎么工作和被谁使用，是个非常好的新手指南。</p>
+<p>2.<a href="https://developer.apple.com/library/ios/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html#//apple_ref/doc/uid/TP40001319-CH202-BCGCDHIJ" target="_blank" rel="external">Uniform Type Identifier介绍和使用‍</a></p>
+<p>这篇文档详细得描述了UTI的基础概念和属性，还有它们的使用方法，内容非常丰富，本文主要参考的就是这篇</p>
+<p>3.<a href="https://developer.apple.com/library/ios/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html#//apple_ref/doc/uid/TP40009259-SW1" target="_blank" rel="external">System-Declared Uniform Type Identifiers‍</a></p>
+<p>这篇文档提供了在OS X系统中定义的一个UTI的列表，我们可以查看每一种官方提供的UTI的定义和涵义。</p>
+<p>4.<a href="https://developer.apple.com/library/ios/documentation/MobileCoreServices/Reference/UTTypeRef/index.html#//apple_ref/doc/uid/TP40008771" target="_blank" rel="external">UTType Reference‍</a></p>
+<p>这篇文档提供了对UTI字符串直接操作的函数方法</p>
+<p>5.<a href="https://developer.apple.com/library/ios/qa/qa1587/_index.html#//apple_ref/doc/uid/DTS40012659" target="_blank" rel="external">一步一步为iOS应用添加自定义的document type和新的UTI‍</a></p>
+<p>顾名思义，这篇文档，讲解的是如何在iOS应用中导入新的UTI和添加自定义的document type。</p>
+<h1 id="为什么会有UTI"><a href="#为什么会有UTI" class="headerlink" title="为什么会有UTI"></a>为什么会有UTI</h1><p>为什么会有UTI，打个比方，它就像是如今世界各国作为官方语言统讲得英文。为什么这么比喻呢，因为中国人讲母语汉语，法国人讲母语法语，但是如果一个中国人到了法国，而又不懂法语，碰到的法国人不懂汉语，那么他们如何交流沟通呢，这就是英文的用武之地了。而相对而言，苹果操作系统相当于整个世界，各个不同的程序或者服务相当于各个国家，俩个不同的程序想要互通交流，就比如互相发送文件，可是一个使用文件扩展名，一个使用MIME类型，俩者的数据类型不同，无法解析，都互相不认识，那么怎么交流沟通呢?在这样的情景下，UTI就有了用武之地啦，它就充当的是现实世界的英文这个角色。</p>
+<h1 id="UTI概念"><a href="#UTI概念" class="headerlink" title="UTI概念"></a>UTI概念</h1><p>Uniform type identifiers(UTIs)提供了在整个系统里面标识数据的一个统一的方式，比如documents(文档)、pasteboard data(剪贴板数据)和bundles(包)。</p>
+<blockquote>
+<p>而具体到UTI的定义，官方文档是这么说的：“A uniform type identifier is a string that uniquely identifies a class of entities considered to have a ‘type’.”。其大概意思是说，一个统一类型标识符是一个唯一标识一种拥有”类型”属性实体的字符串。而且，针对这个“type”，官方文档还给我们提出了例子解释，对于一个文件或者是字节流来说，“type”指的的数据类型；而对于packages和bundles来说，“type”指的就是它们内部的目录层级结构。</p>
+</blockquote>
+<h1 id="UTI用途"><a href="#UTI用途" class="headerlink" title="UTI用途"></a>UTI用途</h1><p>大多数情况下，一个UTI提供的是系统中所有程序和服务都能够识别并且依赖的一个唯一的标识，这么讲可能有些太抽象，我们使用一下官方文档中给出的例子，比如一个JPEG类型的图片文件，在不同的环境下，可以有下面几种不同的标识方法：</p>
+<blockquote>
+<ol>
+<li>‘JPEG’, OSType表示,</li>
+<li>‘.jpg’, 文件扩展名</li>
+<li>‘.jpeg’, 文件扩展名</li>
+<li>‘image/jpeg’, MIME(多用途互联网邮件扩展类型)中的一种类型</li>
+</ol>
+</blockquote>
+<p>而UTI则是用‘public.jpeg’这个字符串标识，完全代替了这些不一致的标签，这个字符串和其他任何一个旧标签都是完全兼容的，而且他们之间可以相互转换。由于UTI可以标识任何类型的实体，所以他们相对于旧标签来说灵活性更强了；使用UTI我们可以表示下面这些实体：</p>
+<blockquote>
+<ul>
+<li>Pasteboard data</li>
+<li>Folders (directories)</li>
+<li>Bundles</li>
+<li>Frameworks</li>
+<li>Streaming data</li>
+<li>Aliases and symbolic links</li>
+</ul>
+</blockquote>
+<h1 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h1><h3 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h3><p>Apple给我们提供了在iOS和Mac应用中通用的UTI字符串集合，比如，’public.data’、’public.item’、’public.image’等，这些我们都可以在官方文档中进行查阅他们的涵义。除此之外，我们也可以在应用程序中自定义自己的UTI字符串，比如我们可以定义一个标识特殊文档格式的UTI字符串叫’io.github.serazheng’，如果其他的应用程序想要支持我们这种格式的文档，他们就可以用’io.github.serazheng’来标识我们的文档。</p>
+<h3 id="2-字符集"><a href="#2-字符集" class="headerlink" title="2. 字符集"></a>2. 字符集</h3><p>看到我们上边的举例了，那么我们来说一下定义UTI字符串时所用到的字符集。通常一个UTI字符串是一个包含ASCII字符的Unicode字符串，同时也可以加入罗马字母和阿拉伯数字，如（A-Z）,（a-z），（0-9）还有点号（”.”）和连接符(“-“)。而任何包含非法字符的字符串，如包含下划线’_’，都无法作为UTI来标识内容，而且Apple不会有任何错误反馈。</p>
+<h3 id="3-语法"><a href="#3-语法" class="headerlink" title="3. 语法"></a>3. 语法</h3><p>就像我上面的例子一样，UTI的定义和我们开发iOS程序时填写organization时一样，采取的是反域名规则。如下面这几种：</p>
+<blockquote>
+<ul>
+<li>com.apple.quicktime-movie</li>
+<li>com.mycompany.myapp.myspecialfiletype</li>
+<li>public.html</li>
+<li>com.apple.pict</li>
+<li>public.jpeg</li>
+</ul>
+</blockquote>
+<p>而UTI中的域名，如‘com’、‘public’这些，仅仅是用来表示这个UTI字符串在域名层级中的位置，它不会影响任何相似类型的分组。比如，‘public’域名就是大部分应用程序用来标识标准类型的，而目前仅仅只有Apple可以创建‘public’域名的UTI。</p>
+<p>另外，我们可能会碰到的是一种‘dyn’域名，是动态域名，意思就是我们使用中，不会指定这种类型的UTI为某一个字符串，然后系统运行过程中，会自动识别帮我们处理。针对这种动态标识，我们是看不到的，但是我们可以通过UTI字符串的操作方式转换成我们的常用类型，比如OSType,MIME类型等。</p>
+<blockquote>
+<p>官方文档中，对动态标识有个比喻:“You can think of a dynamic identifier as a UTI-compatible wrapper around an otherwise unknown filename extension, MIME type, OSType, and so on”，大概意思就是我们可以把这种动态标识当做是针对普通类型进行了重写包装的，而且是兼容UTI的一种标识。</p>
+</blockquote>
+<p>最后一种就是可以自定义的域名，代表性的就是‘com’域名，Apple也给我们提供了一些他们定义的’com’域名的UTI。</p>
+<h1 id="顺应性"><a href="#顺应性" class="headerlink" title="顺应性"></a>顺应性</h1><p>UTI相对于其他那些旧标签的一个关键优势就是在于，它可以在一个顺应结构中声明。而用我们面向对象的方式说，UTI就是可继承的，而且是多继承方式。先上图：<br><img src="https://developer.apple.com/library/ios/documentation/FileManagement/Conceptual/understanding_utis/art/conformance_hierarchy.gif" alt="UTI继承结构"></p>
+<p>如上图所示，‘public.html’这个UTI就是继承于‘public.text’这个UTI，因为‘public.html’标识的是HTML文本格式，也属于是文本格式的一种，而文本、图片等等这些内容又都属于是数据的一种，所以他们继承于’public.data’这个UTI。</p>
+<p>上面这个UTI继承结构图，指的是UTI中的内容形式的继承结构，此外，原则上来说，指定UTI层次的时候，即可以指定它的功能结构，也可以指定它的物理结构，上图是就是一个内容形式的功能结构图.物理结构指的就是这个UTI的物理实质，比如它标识一个目录，一个文件等，而功能结构指的就是这个UTI的用图，比如同样是文件，它标识的可以是图片、视频等等。 而官方文档也给出了一般指定UTI层次结构的规则：</p>
+<ol>
+<li>一个UTI在物理层次上需要继承‘public.item’</li>
+<li>一个UTI在功能层次需要继承非’public.item’之外的UTI。</li>
+</ol>
+<p>然而，指定UTI的功能层次并不是强制的，但是这样做是考虑到可以更好地将UTI集成到系统一些特性中，就比如Spotlight应用，就可以把我们指定的功能性UTI和命名属性联系起来。下面是一个UTI功能顺应结构和物理顺应结构图：<br> <img src="https://developer.apple.com/library/ios/documentation/FileManagement/Conceptual/understanding_utis/art/physical_vs_functional.gif" alt="UTI功能结构和物理结构"></p>
+<p>这个顺应性使得我们的UTI在决定类型上拥有更高的灵活性，不仅避免了大量的条件判断的使用，而且还可以关联你想不到的一些类型。</p>
+<h1 id="使用UTI"><a href="#使用UTI" class="headerlink" title="使用UTI"></a>使用UTI</h1><h3 id="1-应用场景"><a href="#1-应用场景" class="headerlink" title="1. 应用场景"></a>1. 应用场景</h3><p>在Mac OS中我们开发应用时我们可以经常使用到UTI，但是在开发iOS应用程序时，我们应用到UTI的场景不是很多，这也是现在网上教程偏少得原因。而在iOS开发中，一般我们使用UTI来标识剪贴板的类型。而在具体使用到Apple给我们提供的UTI字符串的时候，我们必须使用在UTCoreTypes.h文件中定义的常量来代替直接使用字符串。关于UIPasteboard的详细使用，大家可以去这篇博客中详细学习一下：<a href="http://blog.csdn.net/zhangao0086/article/details/7580654" target="_blank" rel="external">精通UIPasteboard粘贴板</a>。</p>
+<h3 id="2-操作方法"><a href="#2-操作方法" class="headerlink" title="2. 操作方法"></a>2. 操作方法</h3><p>现在我们来看一下苹果提供的一些直接操作UTI的函数方法，简单列举几个。我们可以在MobileCoreServices这个framework中的UIType.h文件中找到，我们也可以仔细的看一下这个framework中的其他文件，都是对UTI的一些定义和声明。</p>
+<ul>
+<li>UITypeEqual</li>
+</ul>
+<p>判断俩个UTI是否完全一样，后者是一个动态标签说明是否是另外一个UTI标签说明的子集。</p>
+<ul>
+<li>UITypeConformsTo</li>
+</ul>
+<p>判断俩个标签的顺应性，用面向对象的角度理解，就是判断是否是子类。</p>
+<ul>
+<li>UTTypeCreatePreferredIdentifierForTag</li>
+</ul>
+<p>通过其他类型标识符，如MIME标识符，转换成UTI，当可以创建多个UTI字符串时，一般返回’public’域名的UTI。</p>
+<ul>
+<li>UTTypeCreateAllIdentifiersForTag</li>
+</ul>
+<p>通过其他类型标识符，如MIME标识符，转换成UTI，当可以创建多个UTI字符串时，返回所有的UTIs,让你自己选</p>
+<ul>
+<li>UTTypeCopyPreferredTagWithClass</li>
+</ul>
+<p>交换UTI字符串标识</p>
+<h1 id="自定义UTI"><a href="#自定义UTI" class="headerlink" title="自定义UTI"></a>自定义UTI</h1><h3 id="1-用法"><a href="#1-用法" class="headerlink" title="1. 用法"></a>1. 用法</h3><p>苹果允许Mac开发者为他们的Mac App中独有的数据格式自定义新的UTI。它们一般被声明在下面几个文件中</p>
+<blockquote>
+<ul>
+<li>Info.plist</li>
+<li>Application bundles</li>
+<li>Spotlight Importer bundles</li>
+<li>Automator action bundles</li>
+</ul>
+</blockquote>
+<p>使用官方给我们的一个UTI声明的例子，Public.jpeg声明：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">key</span>&gt;</span>UTExportedTypeDeclarations<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">array</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">dict</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">key</span>&gt;</span>UTTypeIdentifier<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">string</span>&gt;</span>public.jpeg<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">key</span>&gt;</span>UTTypeReferenceURL<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">string</span>&gt;</span>http://www.w3.org/Graphics/JPEG/<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">key</span>&gt;</span>UTTypeDescription<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">string</span>&gt;</span>JPEG image<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">key</span>&gt;</span>UTTypeIconFile<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">string</span>&gt;</span>public.jpeg.icns<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">key</span>&gt;</span>UTTypeConformsTo<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">array</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">string</span>&gt;</span>public.image<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">string</span>&gt;</span>public.data<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">key</span>&gt;</span>UTTypeTagSpecification<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">dict</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">key</span>&gt;</span>com.apple.ostype<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">string</span>&gt;</span>JPEG<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">key</span>&gt;</span>public.filename-extension<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">array</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">string</span>&gt;</span>jpeg<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">string</span>&gt;</span>jpg<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">key</span>&gt;</span>public.mime-type<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">string</span>&gt;</span>image/jpeg<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">dict</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">dict</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>一个UTI声明的属性列表：</p>
+<p><section><br>    <div style="margin-top:1.667em;margin-bottom:1.667em;"><br>        <table border="0" cellspacing="0" cellpadding="5"><br>            <tbody><br>                <tr><br>                    <th scope="col" style="font-weight:400;background-color:#93A5BB;padding:0.3em 0.667em;font-size:13px;color:#FFFFFF;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#9BB3CD;border-right-width:1px;border-right-style:solid;border-right-color:#9BB3CD;"><br>                        <p style="font-weight:700;line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;margin-bottom:0.33em;"><br>                            Key<br>                        </p><br>                    </th><br>                    <th scope="col" style="font-weight:400;background-color:#93A5BB;padding:0.3em 0.667em;font-size:13px;color:#FFFFFF;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#9BB3CD;border-right-width:1px;border-right-style:solid;border-right-color:#9BB3CD;"><br>                        <p style="font-weight:700;line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;margin-bottom:0.33em;"><br>                            Value type<br>                        </p><br>                    </th><br>                    <th scope="col" style="font-weight:400;background-color:#93A5BB;padding:0.3em 0.667em;font-size:13px;color:#FFFFFF;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#9BB3CD;border-right-width:1px;border-right-style:solid;border-right-color:#9BB3CD;"><br>                        <p style="font-weight:700;line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;margin-bottom:0.33em;"><br>                            Description<br>                        </p><br>                    </th><br>                </tr><br>                <tr><br>                    <td scope="row"><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            <code style="font-family:Courier, Consolas, monospace;color:#666666;">UTExportedTypeDeclarations</code><br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            array of dictionaries<br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            An array of exported UTI declarations (that is, identifiers owned by the bundle’s publisher).<br>                        </p><br>                    </td><br>                </tr><br>                <tr><br>                    <td scope="row"><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            <code style="font-family:Courier, Consolas, monospace;color:#666666;">UTImportedTypeDeclarations</code><br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            array of dictionaries<br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            An array of imported UTI declarations (that is, identifiers owned by another company or organization).<br>                        </p><br>                    </td><br>                </tr><br>                <tr><br>                    <td scope="row"><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            <code style="font-family:Courier, Consolas, monospace;color:#666666;">UTTypeIdentifier</code><br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            string<br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            The UTI for the declared type. This key is required for UTI declarations.<br>                        </p><br>                    </td><br>                </tr><br>                <tr><br>                    <td scope="row"><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            <code style="font-family:Courier, Consolas, monospace;color:#666666;">UTTypeTagSpecification</code><br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            dictionary<br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            A dictionary defining one or more equivalent type identifiers.<br>                        </p><br>                    </td><br>                </tr><br>                <tr><br>                    <td scope="row"><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            <code style="font-family:Courier, Consolas, monospace;color:#666666;">UTTypeConformsTo</code><br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            array of strings<br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            The UTIs to which this identifier conforms.<br>                        </p><br>                    </td><br>                </tr><br>                <tr><br>                    <td scope="row"><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            <code style="font-family:Courier, Consolas, monospace;color:#666666;">UTTypeIconFile</code><br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            string<br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            The name of the bundle icon resource to associate with this UTI.<br>                        </p><br>                    </td><br>                </tr><br>                <tr><br>                    <td scope="row"><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            <code style="font-family:Courier, Consolas, monospace;color:#666666;">UTTypeDescription</code><br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            string<br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            A user-visible description of this type. You can localize this string by including it in an <code style="font-family:Courier, Consolas, monospace;color:#666666;">InfoPlist.strings</code> file.<br>                        </p><br>                    </td><br>                </tr><br>                <tr><br>                    <td scope="row"><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            <code style="font-family:Courier, Consolas, monospace;color:#666666;">UTTypeReferenceURL</code><br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            string<br>                        </p><br>                    </td><br>                    <td><br>                        <p style="line-height:normal;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;"><br>                            The URL of a reference document describing this type.<br>                        </p><br>                    </td><br>                </tr><br>            </tbody><br>        </table><br><br>    </div><br></section></p>
+<p><section><br>    <a name="//apple_ref/doc/uid/TP40001319-CH204-SW4" title="Recommendations for Declaring new Uniform Type Identifiers" style="color:#3366CC;font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;font-size:13px;background-color:#FFFFFF;"></a><br></section></p>
+<p><br>    <br><br> </p>
+
+<p>而且自定义的UTI必须指定UTExportedTypeDeclarations或者UTImportedTypeDeclarations，这样如果是你定义的UTI，第三方应用程序和服务都可以使用，而如果是其他人定义的UTI，那么加入到你的项目中后，你就可以看到这种类型的数据。</p>
+<blockquote>
+<p>而官方文档中有一句话:“If both imported and exported declarations for a UTI exist, the exported declaration takes precedence over imported one”，我的理解是，被导出去得UTI声明所有人是定义UTI的发布者，也就是你的项目，而被导入的UTI声明所有人就是其他人，所以就是说如果对于一个UTI来说，俩种类型的声明都存在，则自己定义的UTI声明优先使用。</p>
+</blockquote>
+<h3 id="2-自定义UTI的建议"><a href="#2-自定义UTI的建议" class="headerlink" title="2. 自定义UTI的建议"></a>2. 自定义UTI的建议</h3><ol>
+<li>你的UTI字符串必须是唯一的。以‘com.’开头的反域名命名方式是确保唯一性的简单有效的方法。</li>
+<li>如果你的代码依赖于第三方App，UTI类型或许不会在系统中展示，你应该在bundle中声明为导入类型</li>
+<li>如果你的UTI类型是一个或多个已存在的UTI类型的子类，则必须给它添加顺应性，让它继承于某个父类。最好是继承于‘public’类型。</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/source/categories/iOS/">iOS</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/source/tags/UTI/">UTI</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://serazheng.github.io/2015-11-20-详解苹果提供的UTI(统一类型标识符)/" data-title="详解苹果提供的UTI(统一类型标识符) | 郑少博的技术博客" data-tsina="5738250598" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015-11-25-iOS实现App之间的内容分享/" title="iOS实现App之间的内容分享">
+  <strong>上一篇：</strong><br/>
+  <span>
+  iOS实现App之间的内容分享</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015-11-05-ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造/"  title="ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造">
+ <strong>下一篇：</strong><br/> 
+ <span>ZSNavigationFilterMenuView动画解析 --- 基于navigationBar的titleView创造
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#官方教程"><span class="toc-number">2.</span> <span class="toc-text">官方教程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#为什么会有UTI"><span class="toc-number">3.</span> <span class="toc-text">为什么会有UTI</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UTI概念"><span class="toc-number">4.</span> <span class="toc-text">UTI概念</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#UTI用途"><span class="toc-number">5.</span> <span class="toc-text">UTI用途</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#用法"><span class="toc-number">6.</span> <span class="toc-text">用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-简介"><span class="toc-number">6.0.1.</span> <span class="toc-text">1. 简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-字符集"><span class="toc-number">6.0.2.</span> <span class="toc-text">2. 字符集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-语法"><span class="toc-number">6.0.3.</span> <span class="toc-text">3. 语法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#顺应性"><span class="toc-number">7.</span> <span class="toc-text">顺应性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用UTI"><span class="toc-number">8.</span> <span class="toc-text">使用UTI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-应用场景"><span class="toc-number">8.0.1.</span> <span class="toc-text">1. 应用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-操作方法"><span class="toc-number">8.0.2.</span> <span class="toc-text">2. 操作方法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义UTI"><span class="toc-number">9.</span> <span class="toc-text">自定义UTI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-用法"><span class="toc-number">9.0.1.</span> <span class="toc-text">1. 用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-自定义UTI的建议"><span class="toc-number">9.0.2.</span> <span class="toc-text">2. 自定义UTI的建议</span></a></li></ol></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="serazheng" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/source/categories/Objective-C/" title="Objective-C">Objective-C<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Swift/" title="Swift">Swift<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/Xcode/" title="Xcode">Xcode<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/iOS/" title="iOS">iOS<sup>14</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/开发心得/" title="开发心得">开发心得<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/source/categories/设计/" title="设计">设计<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/source/tags/多线程/" title="多线程">多线程<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UTI/" title="UTI">UTI<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/APNS/" title="APNS">APNS<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/UIKit/" title="UIKit">UIKit<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/OC基础/" title="OC基础">OC基础<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/设计/" title="设计">设计<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/注释/" title="注释">注释<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/内存管理/" title="内存管理">内存管理<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/CoreAnimation/" title="CoreAnimation">CoreAnimation<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/ShareExtension/" title="ShareExtension">ShareExtension<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/架构/" title="架构">架构<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/开篇博客/" title="开篇博客">开篇博客<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/TestFlight/" title="TestFlight">TestFlight<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/GitHub开源/" title="GitHub开源">GitHub开源<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/年度总结/" title="年度总结">年度总结<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/Swift/" title="Swift">Swift<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.jianshu.com/users/a0be12563346/latest_articles" target="_blank" title="简书">简书</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://segmentfault.com/u/shaobo" target="_blank" title="SegmentFault">SegmentFault</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://toutiao.io/u/169245" target="_blank" title="开发者头条">开发者头条</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://stackoverflow.com/users/5741944/serazheng" target="_blank" title="Stack OverFlow">Stack OverFlow</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://weibo.com/shaobozheng" target="_blank" title="新浪微博">新浪微博</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=5738250598&verifier=469942b8&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Sera Zheng in HiJobs. <br/>
+			This is my personal blog</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/5738250598" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/serazheng" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		<a href="http://stackoverflow.com/users/5741944" target="_blank" class="icon-stack-overflow" title="stackoverflow"></a>
+		
+		
+		<a href="https://twitter.com/serazheng" target="_blank" class="icon-twitter" title="twitter"></a>
+		
+		
+		
+		<a href="https://www.linkedin.com/in/少博-郑-9a369910b" target="_blank" class="icon-linkedin" title="linkedin"></a>
+		
+		
+		
+		
+		
+		<a href="mailto:SeraZheng@163.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="/about" target="_blank" title="SeraZheng">SeraZheng</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'SeraZheng';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
