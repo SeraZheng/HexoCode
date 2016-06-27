@@ -82,6 +82,136 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2015-08-03-iOS多线程开发（三）线程安全/" title="iOS多线程开发（三）线程安全" itemprop="url">iOS多线程开发（三）线程安全</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
+		
+  <p class="article-time">
+    <time datetime="2015-08-02T16:00:00.000Z" itemprop="datePublished"> Published 2015-08-03</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在我们使用多线程技术进行开发的时候，无可避免地就要涉及到系统共享资源的安全隐患，也就是我们这篇博客中想要讨论的问题：<code>线程安全</code>。</p>
+<blockquote>
+<p>关于<code>线程安全性</code>，引用一段<code>百度百科</code>里面的文字描述：当对一个复杂对象进行某种操作时，从操作开始到操作结束，被操作的对象往往会经历若干非法的中间状态。调用一个函数（假设该函数是正确的）操作某对象常常会使该对象暂时陷入不可用的状态（通常称为不稳定状态），等到操作完全结束，该对象才会重新回到完全可用的状态。如果其他线程企图访问一个处于不可用状态的对象，该对象将不能正确响应从而产生无法预料的结果，如何避免这种情况发生是线程安全性的核心问题。<br>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2015-08-03-iOS多线程开发（三）线程安全/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/source/categories/多线程/">多线程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/source/tags/多线程/">多线程</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2015-08-03-iOS多线程开发（三）线程安全/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015-08-02-iOS多线程开发（二）使用NSThread/" title="iOS多线程开发（二）使用NSThread" itemprop="url">iOS多线程开发（二）使用NSThread</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
+		
+  <p class="article-time">
+    <time datetime="2015-08-01T16:00:00.000Z" itemprop="datePublished"> Published 2015-08-02</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言　　"></a>前言　　</h1><p>在上一篇博客中，我们讲述了<code>多线程</code>的基础知识，也谈到了iOS开发中三个使用多线程的技术，<code>NSThread</code>、<code>NSOperation</code>和<code>GCD</code>；我们在这一篇中，主要讲一下第一种多线程技术<code>NSThread</code>。相比于其他俩种技术，<code>NSThread</code>具有更<code>轻量级</code>的优点，也是可以完全控制，完全负责的，也是最麻烦的。我们需要手动地管理线程的生命周期和同步的问题，这里的同步指的是系统资源地分配和调度上的同步。<br>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2015-08-02-iOS多线程开发（二）使用NSThread/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/source/categories/多线程/">多线程</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/source/tags/多线程/">多线程</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2015-08-02-iOS多线程开发（二）使用NSThread/#disqus_thread" class="comments-count-link">Comments</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2015-08-01-iOS多线程开发（一）多线程基础/" title="iOS多线程开发（一）多线程基础" itemprop="url">iOS多线程开发（一）多线程基础</a>
   </h1>
   <p class="article-author">By
@@ -594,137 +724,9 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2015-07-05-浅谈一次练手：GitHub和CocoaPods/" title="浅谈一次练手：GitHub和CocoaPods" itemprop="url">浅谈一次练手：GitHub和CocoaPods</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
-		
-  <p class="article-time">
-    <time datetime="2015-07-04T16:00:00.000Z" itemprop="datePublished"> Published 2015-07-05</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言　　"></a>前言　　</h1><p>在我最早接触开源社区的时候，许多的前辈都给我推荐了<code>GitHub</code>，一个开源代码库和版本控制系统，一个管理软件开发以及发现已有开源代码的首选。<code>GitHub</code>上分为<code>私有</code>和<code>开放</code>俩种项目，私有的项目是需要付费的，我想这也是<code>GitHub</code>的一种长期的经营策略。而关于<code>CocoaPods</code>,相信做iOS的开发者们都不陌生，否则就该返厂进修啦，哈哈哈。。。<br>
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2015-07-05-浅谈一次练手：GitHub和CocoaPods/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/source/categories/开发心得/">开发心得</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/source/tags/GitHub开源/">GitHub开源</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2015-07-05-浅谈一次练手：GitHub和CocoaPods/#disqus_thread" class="comments-count-link">Comments</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2015-07-02-我的第一篇博客/" title="我的第一篇博客" itemprop="url">我的第一篇博客</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="SeraZheng" target="_blank" itemprop="author">SeraZheng</a>
-		
-  <p class="article-time">
-    <time datetime="2015-07-01T16:00:00.000Z" itemprop="datePublished"> Published 2015-07-02</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言　　"></a>前言　　</h1><p>经过了将近一年的实习期，我终于如愿的正式走上了从事软件开发的道路。在由高中时期初识计算机的乐趣进而到大学时对编程的迷恋，我也可以算得上完成了第一个阶段的目标与梦想。</p>
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2015-07-02-我的第一篇博客/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/source/categories/开发心得/">开发心得</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/source/tags/开篇博客/">开篇博客</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2015-07-02-我的第一篇博客/#disqus_thread" class="comments-count-link">Comments</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix">
-    <a class="extend prev" rel="prev" href="/page/2/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" href="/page/2/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">Next<span></span></a>
   </nav>
 
 </div>
@@ -754,11 +756,15 @@
 		  
 		
 		  
+			<li><a href="/source/categories/Swift/" title="Swift">Swift<sup>1</sup></a></li>
+		  
+		
+		  
 			<li><a href="/source/categories/Xcode/" title="Xcode">Xcode<sup>2</sup></a></li>
 		  
 		
 		  
-			<li><a href="/source/categories/iOS/" title="iOS">iOS<sup>13</sup></a></li>
+			<li><a href="/source/categories/iOS/" title="iOS">iOS<sup>14</sup></a></li>
 		  
 		
 		  
@@ -791,15 +797,11 @@
 			
 		
 			
-				<li><a href="/source/tags/UIKit/" title="UIKit">UIKit<sup>4</sup></a></li>
-			
-		
-			
 				<li><a href="/source/tags/APNS/" title="APNS">APNS<sup>4</sup></a></li>
 			
 		
 			
-				<li><a href="/source/tags/注释/" title="注释">注释<sup>2</sup></a></li>
+				<li><a href="/source/tags/UIKit/" title="UIKit">UIKit<sup>4</sup></a></li>
 			
 		
 			
@@ -811,11 +813,7 @@
 			
 		
 			
-				<li><a href="/source/tags/CoreAnimation/" title="CoreAnimation">CoreAnimation<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/source/tags/架构/" title="架构">架构<sup>1</sup></a></li>
+				<li><a href="/source/tags/注释/" title="注释">注释<sup>2</sup></a></li>
 			
 		
 			
@@ -823,11 +821,15 @@
 			
 		
 			
-				<li><a href="/source/tags/TestFlight/" title="TestFlight">TestFlight<sup>1</sup></a></li>
+				<li><a href="/source/tags/CoreAnimation/" title="CoreAnimation">CoreAnimation<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/source/tags/年度总结/" title="年度总结">年度总结<sup>1</sup></a></li>
+				<li><a href="/source/tags/ShareExtension/" title="ShareExtension">ShareExtension<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/架构/" title="架构">架构<sup>1</sup></a></li>
 			
 		
 			
@@ -835,7 +837,19 @@
 			
 		
 			
+				<li><a href="/source/tags/TestFlight/" title="TestFlight">TestFlight<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/source/tags/GitHub开源/" title="GitHub开源">GitHub开源<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/年度总结/" title="年度总结">年度总结<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/source/tags/Swift/" title="Swift">Swift<sup>1</sup></a></li>
 			
 		
 		</ul>
